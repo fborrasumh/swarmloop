@@ -3,159 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SwarmLoop — El bucle que aprende</title>
+<title>SwarmLoop — Enjambre Autoaprendiz</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
   :root {
-    --bg:       #0a0b0f;
-    --surface:  #12141a;
-    --border:   #1e2130;
-    --muted:    #2a2d3e;
-    --text:     #c8ccdd;
-    --dim:      #5a5f78;
-    --white:    #eef0f8;
-    --cyan:     #00d4ff;
-    --green:    #00ff9d;
-    --amber:    #ffb347;
-    --red:      #ff5e7d;
-    --purple:   #a78bfa;
-    --glow-c:   0 0 20px rgba(0,212,255,0.25);
-    --glow-g:   0 0 20px rgba(0,255,157,0.25);
+    --bg:      #0a0b0f;
+    --surface: #12141a;
+    --border:  #1e2130;
+    --muted:   #2a2d3e;
+    --text:    #c8ccdd;
+    --dim:     #5a5f78;
+    --white:   #eef0f8;
+    --cyan:    #00d4ff;
+    --green:   #00ff9d;
+    --amber:   #ffb347;
+    --red:     #ff5e7d;
+    --purple:  #a78bfa;
+    --teal:    #00e5cc;
+    --glow-c:  0 0 20px rgba(0,212,255,0.25);
+    --glow-g:  0 0 20px rgba(0,255,157,0.25);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    line-height: 1.6; min-height: 100vh;
   }
 
-  /* ── LAYOUT ── */
   .app {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
+    display: grid; grid-template-rows: auto 1fr auto;
+    min-height: 100vh; max-width: 1100px;
+    margin: 0 auto; padding: 0 20px;
   }
 
-  /* ── HEADER ── */
+  /* HEADER */
   header {
-    padding: 28px 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border-bottom: 1px solid var(--border);
+    padding: 28px 0 20px; display: flex; align-items: center;
+    gap: 14px; border-bottom: 1px solid var(--border);
   }
   .logo-mark {
-    width: 38px; height: 38px;
-    border-radius: 8px;
+    width: 38px; height: 38px; border-radius: 8px;
     background: linear-gradient(135deg, var(--cyan), var(--purple));
     display: flex; align-items: center; justify-content: center;
     font-family: 'JetBrains Mono', monospace;
-    font-weight: 700; font-size: 18px; color: #000;
-    flex-shrink: 0;
+    font-weight: 700; font-size: 18px; color: #000; flex-shrink: 0;
   }
   .logo-text { font-family: 'JetBrains Mono', monospace; }
   .logo-text strong { color: var(--white); font-size: 16px; letter-spacing: -0.3px; }
   .logo-text span { display: block; font-size: 11px; color: var(--dim); }
   .header-badge {
-    margin-left: auto;
-    font-family: 'JetBrains Mono', monospace;
+    margin-left: auto; font-family: 'JetBrains Mono', monospace;
     font-size: 10px; color: var(--cyan);
     border: 1px solid rgba(0,212,255,0.3);
-    padding: 3px 10px; border-radius: 20px;
-    letter-spacing: 1px;
+    padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
   }
 
-  /* ── MAIN ── */
-  main {
-    padding: 28px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  main { padding: 28px 0; display: flex; flex-direction: column; gap: 20px; }
 
-  /* ── API KEY PANEL ── */
-  .api-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex; align-items: center; gap: 12px;
-    flex-wrap: wrap;
+  /* API KEYS PANEL */
+  .keys-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 12px;
   }
-  .api-label {
+  .keys-title {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--dim); white-space: nowrap;
+    font-size: 10px; color: var(--dim); letter-spacing: 1px;
   }
-  .api-panel input {
-    flex: 1; min-width: 200px;
+  .key-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .key-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    min-width: 100px; flex-shrink: 0;
+  }
+  .key-label.openai { color: var(--cyan); }
+  .key-label.tavily { color: var(--teal); }
+  .key-row input {
+    flex: 1; min-width: 180px;
     background: var(--muted); border: 1px solid var(--border);
     color: var(--white); border-radius: 6px; padding: 7px 12px;
     font-family: 'JetBrains Mono', monospace; font-size: 12px;
     outline: none; letter-spacing: 1px;
   }
-  .api-panel input:focus { border-color: var(--cyan); }
+  .key-row input:focus { border-color: var(--cyan); }
   .save-btn {
     background: transparent; border: 1px solid var(--cyan);
-    color: var(--cyan); border-radius: 6px; padding: 7px 16px;
+    color: var(--cyan); border-radius: 6px; padding: 7px 14px;
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    cursor: pointer; transition: background 0.2s;
-    white-space: nowrap;
+    cursor: pointer; transition: background 0.2s; white-space: nowrap;
   }
   .save-btn:hover { background: rgba(0,212,255,0.1); }
-  .api-status { font-size: 11px; color: var(--green); }
+  .key-status { font-size: 11px; }
+  .key-status.ok  { color: var(--green); }
+  .key-status.off { color: var(--dim); }
+  .tavily-toggle {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 7px;
+    background: rgba(0,229,204,0.05); border: 1px solid rgba(0,229,204,0.15);
+  }
+  .toggle-switch {
+    position: relative; width: 36px; height: 20px; flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0; border-radius: 20px;
+    background: var(--muted); cursor: pointer; transition: background 0.3s;
+  }
+  .toggle-slider::before {
+    content: ''; position: absolute;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--dim); top: 3px; left: 3px; transition: all 0.3s;
+  }
+  .toggle-switch input:checked + .toggle-slider { background: rgba(0,229,204,0.3); }
+  .toggle-switch input:checked + .toggle-slider::before {
+    background: var(--teal); transform: translateX(16px);
+  }
+  .toggle-label { font-size: 12px; color: var(--text); }
+  .toggle-label span { color: var(--teal); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .search-depth-row {
+    display: flex; align-items: center; gap: 10px; margin-left: auto;
+  }
+  .search-depth-row label { font-size: 11px; color: var(--dim); }
+  .search-depth-row select {
+    background: var(--muted); border: 1px solid var(--border);
+    color: var(--text); border-radius: 5px; padding: 4px 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    outline: none; cursor: pointer;
+  }
 
-  /* ── SPEC EDITOR ── */
+  /* SPEC CARD */
   .spec-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
   }
   .card-header {
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 10px;
   }
-  .card-header .step-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--cyan);
-    background: rgba(0,212,255,0.08);
-    border: 1px solid rgba(0,212,255,0.2);
+  .step-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--cyan);
+    background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
     padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;
   }
   .card-header h2 { font-size: 13px; color: var(--white); font-weight: 500; }
   .card-header .hint { font-size: 11px; color: var(--dim); margin-left: auto; }
   textarea {
-    width: 100%;
-    background: var(--bg);
-    border: none; outline: none; resize: vertical;
-    color: var(--text); font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; line-height: 1.7; padding: 16px 20px;
-    min-height: 160px;
+    width: 100%; background: var(--bg); border: none; outline: none;
+    resize: vertical; color: var(--text);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.7; padding: 16px 20px; min-height: 160px;
   }
   textarea::placeholder { color: var(--dim); }
 
-  /* ── CONTROLS ── */
+  /* CONTROLS */
   .controls {
+    padding: 12px 20px; border-top: 1px solid var(--border);
     display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
   }
   .run-btn {
     background: linear-gradient(135deg, #00d4ff, #a78bfa);
-    border: none; border-radius: 8px;
-    color: #000; font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px; padding: 10px 24px;
-    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
-    letter-spacing: 0.5px;
+    border: none; border-radius: 8px; color: #000; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    padding: 10px 24px; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.5px;
   }
   .run-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
   .run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
@@ -165,7 +177,6 @@
     font-family: 'JetBrains Mono', monospace; font-size: 12px;
     outline: none; cursor: pointer;
   }
-  .agents-select:focus { border-color: var(--cyan); }
   .stat-pill {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
     color: var(--dim); border: 1px solid var(--border);
@@ -173,116 +184,129 @@
   }
   .stat-pill span { color: var(--cyan); }
 
-  /* ── PIPELINE VISUAL ── */
+  /* PIPELINE */
   .pipeline {
-    display: flex; align-items: center; gap: 0;
-    background: var(--surface);
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 20px; overflow-x: auto;
+    display: flex; align-items: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 20px; overflow-x: auto; gap: 0;
   }
   .p-node {
     display: flex; align-items: center; gap: 6px;
-    padding: 6px 14px; border-radius: 6px;
-    border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    white-space: nowrap; transition: all 0.3s;
-    color: var(--dim);
+    white-space: nowrap; transition: all 0.3s; color: var(--dim);
   }
   .p-node.active { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-c); }
   .p-node.done   { border-color: var(--green); color: var(--green); box-shadow: var(--glow-g); }
+  .p-node.search.active { border-color: var(--teal); color: var(--teal); box-shadow: 0 0 20px rgba(0,229,204,0.3); }
+  .p-node.search.done   { border-color: var(--green); color: var(--green); }
   .p-node.verify.active { border-color: var(--purple); color: var(--purple); box-shadow: 0 0 20px rgba(167,139,250,0.3); }
   .p-node.verify.done   { border-color: var(--green); color: var(--green); }
   .p-node.skill.done    { border-color: var(--amber); color: var(--amber); box-shadow: 0 0 20px rgba(255,179,71,0.25); }
   .p-arrow { color: var(--border); font-size: 16px; padding: 0 4px; flex-shrink: 0; }
-  .p-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: currentColor; flex-shrink: 0;
-  }
+  .p-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
   .p-dot.pulse { animation: pulse-anim 0.8s infinite; }
   @keyframes pulse-anim {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.3; transform: scale(0.6); }
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.3; transform:scale(0.6); }
   }
 
-  /* ── SWARM GRID ── */
+  /* SWARM GRID */
   .swarm-section {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
   }
   .swarm-header {
     padding: 12px 20px; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 10px;
   }
   .swarm-header h3 { font-size: 12px; color: var(--white); font-weight: 500; }
-  .swarm-counter {
-    margin-left: auto; font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--cyan);
-  }
+  .swarm-counter { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); }
   .swarm-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1px; background: var(--border);
-    max-height: 340px; overflow-y: auto;
+    gap: 1px; background: var(--border); max-height: 360px; overflow-y: auto;
   }
   .agent-card {
     background: var(--bg); padding: 12px 14px;
-    display: flex; flex-direction: column; gap: 5px;
-    transition: background 0.2s;
+    display: flex; flex-direction: column; gap: 5px; transition: background 0.2s;
   }
   .agent-card.running { background: rgba(0,212,255,0.04); }
+  .agent-card.searching { background: rgba(0,229,204,0.04); }
   .agent-card.done    { background: rgba(0,255,157,0.03); }
   .agent-card.failed  { background: rgba(255,94,125,0.04); }
   .agent-head { display: flex; align-items: center; gap: 8px; }
-  .agent-id {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    color: var(--dim); width: 36px; flex-shrink: 0;
+  .agent-id { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); width:36px; flex-shrink:0; }
+  .agent-name { font-size:11px; color:var(--white); font-weight:500; flex:1; }
+  .agent-status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; background:var(--border); }
+  .agent-card.running .agent-status-dot   { background:var(--cyan); animation:pulse-anim 0.9s infinite; }
+  .agent-card.searching .agent-status-dot { background:var(--teal); animation:pulse-anim 0.7s infinite; }
+  .agent-card.done .agent-status-dot    { background:var(--green); }
+  .agent-card.failed .agent-status-dot  { background:var(--red); }
+  .agent-task { font-size:10px; color:var(--dim); line-height:1.4; padding-left:44px; }
+  .agent-steps { padding-left:44px; font-family:'JetBrains Mono',monospace; font-size:10px; }
+  .agent-card.running .agent-steps   { color:var(--cyan); }
+  .agent-card.searching .agent-steps { color:var(--teal); }
+  .agent-card.done .agent-steps      { color:var(--green); }
+  .agent-card.failed .agent-steps    { color:var(--red); }
+
+  /* SEARCH SOURCES STRIP */
+  .sources-strip {
+    border-top: 1px solid var(--border);
+    padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 6px;
   }
-  .agent-name { font-size: 11px; color: var(--white); font-weight: 500; flex: 1; }
-  .agent-status-dot {
-    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-    background: var(--border);
-  }
-  .agent-card.running .agent-status-dot { background: var(--cyan); animation: pulse-anim 0.9s infinite; }
-  .agent-card.done    .agent-status-dot { background: var(--green); }
-  .agent-card.failed  .agent-status-dot { background: var(--red); }
-  .agent-task { font-size: 10px; color: var(--dim); line-height: 1.4; padding-left: 44px; }
-  .agent-steps {
-    padding-left: 44px; font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--cyan);
+  .source-tag {
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    color: var(--teal); background: rgba(0,229,204,0.07);
+    border: 1px solid rgba(0,229,204,0.2);
+    padding: 2px 8px; border-radius: 4px;
+    max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
-  /* ── OUTPUT PANEL ── */
+  /* OUTPUT TABS */
   .output-section {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
   }
   .output-tabs {
-    display: flex; border-bottom: 1px solid var(--border); padding: 0 20px;
+    display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; overflow-x: auto;
   }
   .tab-btn {
     background: none; border: none; color: var(--dim);
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    padding: 12px 16px; cursor: pointer; border-bottom: 2px solid transparent;
-    transition: color 0.2s; letter-spacing: 0.5px;
-    margin-bottom: -1px;
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+    padding: 12px 14px; cursor: pointer; border-bottom: 2px solid transparent;
+    transition: color 0.2s; letter-spacing: 0.5px; margin-bottom: -1px;
+    white-space: nowrap;
   }
   .tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
   .tab-content { display: none; padding: 16px 20px; }
   .tab-content.active { display: block; }
   .output-box {
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-    padding: 14px 16px; min-height: 120px; max-height: 300px;
-    overflow-y: auto; font-family: 'JetBrains Mono', monospace;
+    padding: 14px 16px; min-height: 120px; max-height: 320px;
+    overflow-y: auto; font-family:'JetBrains Mono',monospace;
     font-size: 11px; line-height: 1.8; color: var(--text);
     white-space: pre-wrap; word-break: break-word;
   }
-  .output-box .token-cyan   { color: var(--cyan); }
-  .output-box .token-green  { color: var(--green); }
-  .output-box .token-amber  { color: var(--amber); }
-  .output-box .token-purple { color: var(--purple); }
-  .output-box .token-red    { color: var(--red); }
-  .output-box .token-dim    { color: var(--dim); }
+  .token-cyan   { color: var(--cyan); }
+  .token-green  { color: var(--green); }
+  .token-amber  { color: var(--amber); }
+  .token-purple { color: var(--purple); }
+  .token-teal   { color: var(--teal); }
+  .token-red    { color: var(--red); }
+  .token-dim    { color: var(--dim); }
 
-  /* ── SKILL BANK ── */
+  .verify-result {
+    margin-top: 12px; padding: 12px 16px; border-radius: 7px;
+    font-size: 12px; line-height: 1.6; display: none;
+  }
+  .verify-result.pass { background:rgba(0,255,157,0.07); border:1px solid rgba(0,255,157,0.25); color:var(--green); }
+  .verify-result.fail { background:rgba(255,94,125,0.07); border:1px solid rgba(255,94,125,0.25); color:var(--red); }
+  .verify-result.visible { display: block; }
+
+  /* SKILL BANK */
   .skill-bank {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
   }
   .skill-bank-header {
     padding: 12px 20px; border-bottom: 1px solid var(--border);
@@ -291,7 +315,7 @@
   .skill-bank-header h3 { font-size: 12px; color: var(--white); font-weight: 500; }
   .skill-count {
     background: rgba(255,179,71,0.15); border: 1px solid rgba(255,179,71,0.3);
-    color: var(--amber); font-family: 'JetBrains Mono', monospace;
+    color: var(--amber); font-family:'JetBrains Mono',monospace;
     font-size: 10px; padding: 2px 8px; border-radius: 10px;
   }
   .clear-skills {
@@ -308,423 +332,550 @@
   .skill-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .skill-icon { font-size: 13px; }
   .skill-name { font-size: 12px; color: var(--amber); font-weight: 500; }
-  .skill-date { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); margin-left: auto; }
+  .skill-date { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); margin-left:auto; }
   .skill-desc { font-size: 11px; color: var(--text); line-height: 1.5; }
-  .skill-constraints {
-    margin-top: 6px; font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--green); opacity: 0.8;
+  .skill-constraints { margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green); opacity:0.8; }
+  .skill-web-badge {
+    display: inline-block; margin-top: 5px;
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    color: var(--teal); border: 1px solid rgba(0,229,204,0.25);
+    padding: 1px 6px; border-radius: 3px;
   }
-  .empty-skills {
-    padding: 30px 20px; text-align: center;
-    font-size: 12px; color: var(--dim);
-  }
-  .empty-skills .empty-icon { font-size: 28px; margin-bottom: 8px; }
+  .empty-skills { padding:30px 20px; text-align:center; font-size:12px; color:var(--dim); }
+  .empty-skills .empty-icon { font-size:28px; margin-bottom:8px; }
 
-  /* ── VERIFY BADGE ── */
-  .verify-result {
-    margin-top: 12px; padding: 12px 16px;
-    border-radius: 7px; font-size: 12px; line-height: 1.6;
-    display: none;
-  }
-  .verify-result.pass { background: rgba(0,255,157,0.07); border: 1px solid rgba(0,255,157,0.25); color: var(--green); }
-  .verify-result.fail { background: rgba(255,94,125,0.07); border: 1px solid rgba(255,94,125,0.25); color: var(--red); }
-  .verify-result.visible { display: block; }
-
-  /* ── FOOTER ── */
   footer {
-    border-top: 1px solid var(--border);
-    padding: 16px 0;
+    border-top: 1px solid var(--border); padding: 16px 0;
     display: flex; align-items: center; justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim);
     flex-wrap: wrap; gap: 8px;
   }
   footer a { color: var(--cyan); text-decoration: none; }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar { width:5px; height:5px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--muted); border-radius:3px; }
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .pipeline { gap: 0; padding: 12px; }
-    .p-node { padding: 5px 8px; font-size: 10px; }
-    .swarm-grid { grid-template-columns: 1fr 1fr; }
-    footer { flex-direction: column; }
+  @media (max-width:640px) {
+    .pipeline { padding:12px; }
+    .p-node { padding:5px 8px; font-size:10px; }
+    .swarm-grid { grid-template-columns:1fr 1fr; }
   }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo-mark">⟳</div>
-    <div class="logo-text">
-      <strong>SwarmLoop</strong>
-      <span>Self-improving agent pipeline · gpt-4o-mini</span>
-    </div>
-    <div class="header-badge">BETA</div>
-  </header>
+<header>
+  <div class="logo-mark">⟳</div>
+  <div class="logo-text">
+    <strong>SwarmLoop</strong>
+    <span>Enjambre Autoaprendiz · gpt-4o-mini + Tavily Search</span>
+  </div>
+  <div class="header-badge">+WEB</div>
+</header>
 
-  <main>
+<main>
 
-    <!-- API KEY -->
-    <div class="api-panel">
-      <span class="api-label">OPENAI_KEY</span>
-      <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
-      <button class="save-btn" onclick="saveKey()">Guardar</button>
-      <span class="api-status" id="apiStatus"></span>
-    </div>
+  <!-- KEYS PANEL -->
+  <div class="keys-panel">
+    <div class="keys-title">CONFIGURACIÓN DE CLAVES</div>
 
-    <!-- SPEC EDITOR -->
-    <div class="spec-card">
-      <div class="card-header">
-        <span class="step-tag">SPEC</span>
-        <h2>Define el objetivo del swarm</h2>
-        <span class="hint">Sé específico en el output esperado</span>
-      </div>
-      <textarea id="specInput" placeholder="GOAL: Analizar el mercado de apps de fitness en España 2024
-SCOPE: Apps con >10k descargas, excluir apps de nutrición
-SOURCES: App Store, Google Play, informes públicos únicamente
-OUTPUT: Lista de 20 apps con descripción, precio y ventaja competitiva
-STOP CONDITION: Si no hay datos verificables, reportar en lugar de inventar"></textarea>
-      <div style="padding:12px 20px; border-top:1px solid var(--border);">
-        <div class="controls">
-          <button class="run-btn" id="runBtn" onclick="startLoop()">▶ Ejecutar Swarm</button>
-          <select class="agents-select" id="agentCount">
-            <option value="4">4 agentes (demo)</option>
-            <option value="6" selected>6 agentes</option>
-            <option value="8">8 agentes</option>
-          </select>
-          <div class="stat-pill" id="runCounter">Ejecuciones: <span>0</span></div>
-          <div class="stat-pill" id="stepCounter">Pasos: <span>0</span></div>
-        </div>
-      </div>
+    <div class="key-row">
+      <span class="key-label openai">OPENAI_KEY</span>
+      <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
+      <button class="save-btn" onclick="saveKeys()">Guardar</button>
+      <span class="key-status" id="openaiStatus"></span>
     </div>
 
-    <!-- PIPELINE VISUAL -->
-    <div class="pipeline" id="pipeline">
-      <div class="p-node" id="pn-spec">
-        <div class="p-dot"></div>SPEC
-      </div>
-      <div class="p-arrow">──▶</div>
-      <div class="p-node" id="pn-decomp">
-        <div class="p-dot"></div>DECOMP
-      </div>
-      <div class="p-arrow">──▶</div>
-      <div class="p-node" id="pn-swarm">
-        <div class="p-dot"></div>SWARM
-      </div>
-      <div class="p-arrow">──▶</div>
-      <div class="p-node verify" id="pn-verify">
-        <div class="p-dot"></div>VERIFY
-      </div>
-      <div class="p-arrow">──▶</div>
-      <div class="p-node skill" id="pn-skill">
-        <div class="p-dot"></div>SKILL ⊕
-      </div>
+    <div class="key-row">
+      <span class="key-label tavily">TAVILY_KEY</span>
+      <input type="password" id="tavilyKey" placeholder="tvly-..." autocomplete="off">
+      <span class="key-status" id="tavilyStatus"></span>
     </div>
 
-    <!-- SWARM GRID -->
-    <div class="swarm-section" id="swarmSection" style="display:none">
-      <div class="swarm-header">
-        <h3>Agentes activos</h3>
-        <div class="swarm-counter" id="swarmCounter">0 / 0 completados</div>
-      </div>
-      <div class="swarm-grid" id="swarmGrid"></div>
-    </div>
-
-    <!-- OUTPUT TABS -->
-    <div class="output-section">
-      <div class="output-tabs">
-        <button class="tab-btn active" onclick="switchTab('decomp')">Descomposición</button>
-        <button class="tab-btn" onclick="switchTab('results')">Resultados</button>
-        <button class="tab-btn" onclick="switchTab('verify')">Verificación</button>
-        <button class="tab-btn" onclick="switchTab('log')">Log</button>
-      </div>
-      <div class="tab-content active" id="tab-decomp">
-        <div class="output-box" id="out-decomp"><span style="color:var(--dim)">Aquí aparecerá el plan de descomposición del swarm antes de ejecutarse...</span></div>
-      </div>
-      <div class="tab-content" id="tab-results">
-        <div class="output-box" id="out-results"><span style="color:var(--dim)">Los resultados consolidados aparecerán aquí...</span></div>
-      </div>
-      <div class="tab-content" id="tab-verify">
-        <div class="output-box" id="out-verify"><span style="color:var(--dim)">El agente Verificador (crítico) analizará los resultados aquí...</span></div>
-        <div class="verify-result" id="verifyBadge"></div>
-      </div>
-      <div class="tab-content" id="tab-log">
-        <div class="output-box" id="out-log"><span style="color:var(--dim)">Log de ejecución en tiempo real...</span></div>
+    <div class="tavily-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" id="tavilyEnabled" checked>
+        <span class="toggle-slider"></span>
+      </label>
+      <span class="toggle-label">
+        Búsqueda web real con <span>Tavily</span> — cada agente busca antes de razonar
+      </span>
+      <div class="search-depth-row">
+        <label>profundidad</label>
+        <select id="searchDepth">
+          <option value="basic">basic (rápido)</option>
+          <option value="advanced" selected>advanced (profundo)</option>
+        </select>
       </div>
     </div>
+  </div>
 
-    <!-- SKILL BANK -->
-    <div class="skill-bank">
-      <div class="skill-bank-header">
-        <h3>🧠 Skill Bank</h3>
-        <div class="skill-count" id="skillCount">0 skills</div>
-        <button class="clear-skills" onclick="clearSkills()">Borrar todo</button>
-      </div>
-      <div id="skillListContainer">
-        <div class="empty-skills">
-          <div class="empty-icon">◎</div>
-          Aún no hay skills guardados.<br>Ejecuta el loop y supera la verificación para acumular conocimiento.
-        </div>
+  <!-- SPEC -->
+  <div class="spec-card">
+    <div class="card-header">
+      <span class="step-tag">SPEC</span>
+      <h2>Define el objetivo del swarm</h2>
+      <span class="hint">Con Tavily los agentes buscan fuentes reales</span>
+    </div>
+    <textarea id="specInput" placeholder="GOAL: Identificar las principales convocatorias de subvenciones TIC para pymes en España 2024
+SCOPE: Solo ayudas publicadas en BOE o diarios oficiales autonómicos con dotación confirmada
+RULES: Incluir organismo, nombre oficial, dotación, plazo y enlace BOE/BDNS
+SOURCES: BOE.es, BDNS, IVACE, CDTI, Red.es — no usar blogs ni agregadores
+OUTPUT: 6 convocatorias verificadas, una por agente, con los 5 campos de RULES
+ON CONFLICT: Marcar campo como [CONFLICTO] sin resolver silenciosamente
+STOP CONDITION: Sin enlace oficial activo, descartar y buscar otra — no inventar dotaciones"></textarea>
+    <div class="controls">
+      <button class="run-btn" id="runBtn" onclick="startLoop()">▶ Ejecutar Swarm</button>
+      <select class="agents-select" id="agentCount">
+        <option value="4">4 agentes</option>
+        <option value="6" selected>6 agentes</option>
+        <option value="8">8 agentes</option>
+      </select>
+      <div class="stat-pill">Ejecuciones: <span id="runCountVal">0</span></div>
+      <div class="stat-pill">Búsquedas: <span id="searchCountVal">0</span></div>
+      <div class="stat-pill">Pasos: <span id="stepCountVal">0</span></div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline">
+    <div class="p-node" id="pn-spec"><div class="p-dot"></div>SPEC</div>
+    <div class="p-arrow">──▶</div>
+    <div class="p-node" id="pn-decomp"><div class="p-dot"></div>DECOMP</div>
+    <div class="p-arrow">──▶</div>
+    <div class="p-node search" id="pn-search"><div class="p-dot"></div>🔍 SEARCH</div>
+    <div class="p-arrow">──▶</div>
+    <div class="p-node" id="pn-swarm"><div class="p-dot"></div>SWARM</div>
+    <div class="p-arrow">──▶</div>
+    <div class="p-node verify" id="pn-verify"><div class="p-dot"></div>VERIFY</div>
+    <div class="p-arrow">──▶</div>
+    <div class="p-node skill" id="pn-skill"><div class="p-dot"></div>SKILL ⊕</div>
+  </div>
+
+  <!-- SWARM GRID -->
+  <div class="swarm-section" id="swarmSection" style="display:none">
+    <div class="swarm-header">
+      <h3>Agentes activos</h3>
+      <div class="swarm-counter" id="swarmCounter">0 / 0 completados</div>
+    </div>
+    <div class="swarm-grid" id="swarmGrid"></div>
+    <div class="sources-strip" id="sourcesStrip" style="display:none"></div>
+  </div>
+
+  <!-- OUTPUT TABS -->
+  <div class="output-section">
+    <div class="output-tabs">
+      <button class="tab-btn active" onclick="switchTab('decomp')">Descomposición</button>
+      <button class="tab-btn" onclick="switchTab('sources')">Fuentes web</button>
+      <button class="tab-btn" onclick="switchTab('results')">Resultados</button>
+      <button class="tab-btn" onclick="switchTab('verify')">Verificación</button>
+      <button class="tab-btn" onclick="switchTab('log')">Log</button>
+    </div>
+    <div class="tab-content active" id="tab-decomp">
+      <div class="output-box" id="out-decomp"><span class="token-dim">El plan de descomposición aparecerá aquí antes de ejecutar...</span></div>
+    </div>
+    <div class="tab-content" id="tab-sources">
+      <div class="output-box" id="out-sources"><span class="token-dim">Las fuentes reales consultadas por cada agente aparecerán aquí...</span></div>
+    </div>
+    <div class="tab-content" id="tab-results">
+      <div class="output-box" id="out-results"><span class="token-dim">Resultados consolidados del swarm...</span></div>
+    </div>
+    <div class="tab-content" id="tab-verify">
+      <div class="output-box" id="out-verify"><span class="token-dim">El agente Verificador analizará los resultados aquí...</span></div>
+      <div class="verify-result" id="verifyBadge"></div>
+    </div>
+    <div class="tab-content" id="tab-log">
+      <div class="output-box" id="out-log"><span class="token-dim">Log de ejecución en tiempo real...</span></div>
+    </div>
+  </div>
+
+  <!-- SKILL BANK -->
+  <div class="skill-bank">
+    <div class="skill-bank-header">
+      <h3>🧠 Skill Bank</h3>
+      <div class="skill-count" id="skillCount">0 skills</div>
+      <button class="clear-skills" onclick="clearSkills()">Borrar todo</button>
+    </div>
+    <div id="skillListContainer">
+      <div class="empty-skills">
+        <div class="empty-icon">◎</div>
+        Aún no hay skills guardados.<br>
+        Ejecuta el loop y supera la verificación para acumular conocimiento reutilizable.
       </div>
     </div>
+  </div>
 
-  </main>
+</main>
 
-  <footer>
-    <span>SwarmLoop · inspirado en <a href="https://x.com/0xmovez" target="_blank">@0xMovez</a> · gpt-4o-mini</span>
-    <span id="totalRuns">Total runs: 0 · Skills acumulados: 0</span>
-  </footer>
+<footer>
+  <span>SwarmLoop · inspirado en <a href="https://x.com/0xmovez" target="_blank">@0xMovez</a> · gpt-4o-mini + Tavily</span>
+  <span id="footerStats">Runs: 0 · Búsquedas: 0 · Skills: 0</span>
+</footer>
 
-</div>
+</div><!-- .app -->
 
 <script>
-// ── STATE ──
-let state = {
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+const state = {
   runs: 0,
   totalSteps: 0,
+  totalSearches: 0,
+  running: false,
   skills: JSON.parse(localStorage.getItem('swarm_skills') || '[]'),
-  running: false
+  allSources: []
 };
 
 // ── INIT ──
-const savedKey = localStorage.getItem('openai_key');
-if (savedKey) {
-  document.getElementById('apiKey').value = savedKey;
-  document.getElementById('apiStatus').textContent = '✓ cargada';
-}
-renderSkills();
-updateFooter();
+(function init() {
+  const ok = localStorage.getItem('openai_key');
+  const tv = localStorage.getItem('tavily_key');
+  if (ok) { document.getElementById('openaiKey').value = ok; setStatus('openaiStatus', '✓ guardada', true); }
+  if (tv) { document.getElementById('tavilyKey').value = tv; setStatus('tavilyStatus', '✓ guardada', true); }
+  renderSkills();
+  updateFooter();
+})();
 
-// ── API KEY ──
-function saveKey() {
-  const k = document.getElementById('apiKey').value.trim();
-  if (!k.startsWith('sk-')) { alert('La clave debe empezar con sk-'); return; }
-  localStorage.setItem('openai_key', k);
-  document.getElementById('apiStatus').textContent = '✓ guardada';
-  setTimeout(() => document.getElementById('apiStatus').textContent = '', 2000);
+function setStatus(id, msg, ok) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `key-status ${ok ? 'ok' : 'off'}`;
 }
 
-function getKey() { return localStorage.getItem('openai_key') || ''; }
+function saveKeys() {
+  const ok = document.getElementById('openaiKey').value.trim();
+  const tv = document.getElementById('tavilyKey').value.trim();
+  if (ok) { localStorage.setItem('openai_key', ok); setStatus('openaiStatus', '✓ guardada', true); }
+  if (tv) { localStorage.setItem('tavily_key', tv); setStatus('tavilyStatus', '✓ guardada', true); }
+  if (!ok) alert('Introduce tu API key de OpenAI (sk-...)');
+}
 
-// ── TABS ──
+const getOpenAIKey  = () => localStorage.getItem('openai_key') || '';
+const getTavilyKey  = () => localStorage.getItem('tavily_key') || '';
+const isTavilyOn    = () => document.getElementById('tavilyEnabled').checked && !!getTavilyKey();
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
 function switchTab(id) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', b.onclick.toString().includes(`'${id}'`));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick') === `switchTab('${id}')`);
   });
   document.querySelectorAll('.tab-content').forEach(c => {
     c.classList.toggle('active', c.id === `tab-${id}`);
   });
 }
 
-// ── LOG ──
-function log(msg, type='dim') {
+// ══════════════════════════════════════════
+//  LOG
+// ══════════════════════════════════════════
+function log(msg, type = 'dim') {
   const el = document.getElementById('out-log');
-  const time = new Date().toLocaleTimeString('es', {hour12:false});
-  el.innerHTML += `<span class="token-${type}">[${time}] ${msg}</span>\n`;
+  const t = new Date().toLocaleTimeString('es', { hour12: false });
+  el.innerHTML += `<span class="token-${type}">[${t}] ${msg}</span>\n`;
   el.scrollTop = el.scrollHeight;
 }
 
-// ── PIPELINE STATE ──
+// ══════════════════════════════════════════
+//  PIPELINE NODES
+// ══════════════════════════════════════════
 function setNode(id, st) {
   const el = document.getElementById(`pn-${id}`);
-  el.classList.remove('active','done');
+  el.classList.remove('active', 'done');
   if (st) el.classList.add(st);
-  const dot = el.querySelector('.p-dot');
-  dot.classList.toggle('pulse', st === 'active');
+  el.querySelector('.p-dot').classList.toggle('pulse', st === 'active');
 }
-
 function resetPipeline() {
-  ['spec','decomp','swarm','verify','skill'].forEach(n => setNode(n, null));
+  ['spec','decomp','search','swarm','verify','skill'].forEach(n => setNode(n, null));
 }
 
-// ── OPENAI CALL ──
-async function callLLM(systemPrompt, userPrompt, maxTokens=700) {
-  const key = getKey();
-  if (!key) throw new Error('API key no configurada');
+// ══════════════════════════════════════════
+//  OPENAI CALL
+// ══════════════════════════════════════════
+async function callLLM(system, user, maxTokens = 700) {
+  const key = getOpenAIKey();
+  if (!key) throw new Error('API key de OpenAI no configurada');
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${key}` },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      max_tokens: maxTokens,
-      temperature: 0.7,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ]
+      model: 'gpt-4o-mini', max_tokens: maxTokens, temperature: 0.7,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
     })
   });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Error API');
-  }
-  const data = await res.json();
-  return data.choices[0].message.content;
+  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'Error OpenAI'); }
+  const d = await res.json();
+  return d.choices[0].message.content;
 }
 
-// ── MAIN LOOP ──
+// ══════════════════════════════════════════
+//  TAVILY SEARCH
+// ══════════════════════════════════════════
+async function tavilySearch(query, maxResults = 4) {
+  const key = getTavilyKey();
+  if (!key) throw new Error('API key de Tavily no configurada');
+  const depth = document.getElementById('searchDepth').value;
+
+  const res = await fetch('https://api.tavily.com/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      api_key: key,
+      query,
+      search_depth: depth,
+      max_results: maxResults,
+      include_answer: true,
+      include_raw_content: false
+    })
+  });
+  if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Error Tavily'); }
+  const data = await res.json();
+  state.totalSearches++;
+  document.getElementById('searchCountVal').textContent = state.totalSearches;
+  return data;
+}
+
+function formatSearchResults(tavilyData) {
+  if (!tavilyData?.results?.length) return 'Sin resultados de búsqueda.';
+  let out = '';
+  if (tavilyData.answer) out += `RESPUESTA DIRECTA: ${tavilyData.answer}\n\n`;
+  out += 'FUENTES:\n';
+  tavilyData.results.forEach((r, i) => {
+    out += `[${i+1}] ${r.title}\nURL: ${r.url}\n${r.content?.slice(0, 400)}...\n\n`;
+  });
+  return out;
+}
+
+function collectSources(tavilyData) {
+  if (!tavilyData?.results) return;
+  tavilyData.results.forEach(r => {
+    if (r.url && !state.allSources.find(s => s.url === r.url)) {
+      state.allSources.push({ title: r.title, url: r.url });
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+//  MAIN LOOP
+// ══════════════════════════════════════════
 async function startLoop() {
   if (state.running) return;
-  const key = getKey();
-  if (!key) { alert('Primero guarda tu API key de OpenAI'); return; }
+  const openaiKey = getOpenAIKey();
+  if (!openaiKey) { alert('Primero guarda tu API key de OpenAI'); return; }
+  if (isTavilyOn() && !getTavilyKey()) { alert('Introduce tu API key de Tavily o desactiva la búsqueda web'); return; }
+
   const spec = document.getElementById('specInput').value.trim();
   if (!spec) { alert('Escribe una especificación antes de ejecutar'); return; }
 
-  state.running = true;
-  state.runs++;
+  // Reset
+  state.running = true; state.runs++; state.allSources = [];
   document.getElementById('runBtn').disabled = true;
   document.getElementById('runBtn').textContent = '⟳ Ejecutando...';
-  document.getElementById('runCounter').innerHTML = `Ejecuciones: <span>${state.runs}</span>`;
-
-  // Reset UI
+  document.getElementById('runCountVal').textContent = state.runs;
   resetPipeline();
-  ['decomp','results','verify','log'].forEach(t => {
+  ['decomp','sources','results','verify','log'].forEach(t => {
     document.getElementById(`out-${t}`).innerHTML = '';
   });
   document.getElementById('verifyBadge').className = 'verify-result';
-  document.getElementById('verifyBadge').textContent = '';
+  document.getElementById('sourcesStrip').style.display = 'none';
+  document.getElementById('sourcesStrip').innerHTML = '';
 
   const agentCount = parseInt(document.getElementById('agentCount').value);
+  const webEnabled = isTavilyOn();
 
   try {
-    // ── PHASE 1: SPEC ──
+    // ── 1. SPEC ──
     setNode('spec', 'active');
     log('Leyendo especificación...', 'cyan');
-    await delay(400);
+    await delay(300);
     setNode('spec', 'done');
 
-    // ── PHASE 2: DECOMP ──
+    // ── 2. DECOMP ──
     setNode('decomp', 'active');
     log('Generando plan de descomposición...', 'cyan');
     switchTab('decomp');
 
-    // Inject previous skills into context
-    const skillContext = state.skills.length > 0
-      ? `\n\nSKILLS PREVIOS DISPONIBLES:\n${state.skills.map(s=>`- ${s.name}: ${s.constraint}`).join('\n')}`
+    const skillCtx = state.skills.length
+      ? `\nSKILLS PREVIOS (aplica sus constraints):\n${state.skills.map(s=>`- ${s.name}: ${s.constraint}`).join('\n')}`
       : '';
 
-    const decompPrompt = `Eres el orquestador de un swarm de ${agentCount} agentes especializados. 
-Analiza la especificación y genera el plan de descomposición en JSON.
+    const webCtx = webEnabled
+      ? `\nCada agente realizará búsquedas web reales con Tavily antes de razonar. Las queries de búsqueda deben ser en el idioma apropiado para encontrar fuentes primarias.`
+      : '';
+
+    const decompSys = `Eres el orquestador de un swarm de ${agentCount} agentes especializados.
+Analiza la especificación y genera el plan de descomposición.${webCtx}
 
 Devuelve EXACTAMENTE este JSON (sin markdown):
 {
   "agents": [
-    {"id": "A01", "name": "NombreCorto", "task": "tarea específica en una frase", "steps": número_entre_8_y_25},
+    {"id":"A01","name":"NombreCorto","task":"tarea específica","search_query":"query para Tavily en español o inglés","steps":número},
     ... (exactamente ${agentCount} agentes)
   ],
-  "summary": "descripción del plan en 2-3 frases",
-  "estimated_total_steps": número_total,
-  "quality_risk": "dónde puede fallar la calidad"
+  "summary":"descripción del plan en 2-3 frases",
+  "estimated_total_steps":número,
+  "quality_risk":"dónde puede fallar la calidad"
 }`;
 
-    const decompRaw = await callLLM(decompPrompt, spec + skillContext, 800);
+    const decompRaw = await callLLM(decompSys, spec + skillCtx, 900);
     let decomp;
     try {
       decomp = JSON.parse(decompRaw.replace(/```json|```/g,'').trim());
     } catch {
       decomp = {
-        agents: Array.from({length: agentCount}, (_, i) => ({
-          id: `A0${i+1}`, name: `Agente ${i+1}`,
-          task: `Subtarea ${i+1} del objetivo principal`, steps: 12
+        agents: Array.from({length: agentCount}, (_,i) => ({
+          id:`A0${i+1}`, name:`Agente ${i+1}`,
+          task:`Subtarea ${i+1}`, search_query:`subtarea ${i+1} ${spec.slice(0,50)}`, steps:12
         })),
-        summary: 'Plan generado automáticamente.',
+        summary:'Plan generado automáticamente.',
         estimated_total_steps: agentCount * 12,
-        quality_risk: 'Validación de fuentes'
+        quality_risk:'Validación de fuentes'
       };
     }
 
-    const decompEl = document.getElementById('out-decomp');
-    decompEl.innerHTML = formatDecomp(decomp);
-    log(`Plan: ${decomp.agents.length} agentes · ~${decomp.estimated_total_steps} pasos`, 'green');
+    document.getElementById('out-decomp').innerHTML = formatDecomp(decomp, webEnabled);
+    log(`Plan: ${decomp.agents.length} agentes · ~${decomp.estimated_total_steps} pasos${webEnabled?' · búsqueda web ON':''}`, 'green');
     setNode('decomp', 'done');
 
-    // ── PHASE 3: SWARM ──
-    setNode('swarm', 'active');
-    log('Lanzando swarm en paralelo...', 'amber');
-    document.getElementById('swarmSection').style.display = 'block';
-    renderSwarmGrid(decomp.agents, 'pending');
+    // ── 3. SEARCH (if Tavily enabled) ──
+    let searchResults = {};
+    if (webEnabled) {
+      setNode('search', 'active');
+      log('Ejecutando búsquedas web en paralelo...', 'teal');
+      switchTab('sources');
 
-    // Run all agents in parallel
-    const agentResults = await runSwarm(decomp.agents, spec + skillContext);
+      const searchPromises = decomp.agents.map(async (agent) => {
+        const query = agent.search_query || agent.task;
+        log(`🔍 Buscando: "${query}"`, 'teal');
+        try {
+          const result = await tavilySearch(query, 4);
+          collectSources(result);
+          return { id: agent.id, query, result };
+        } catch(e) {
+          log(`⚠ Búsqueda fallida para ${agent.name}: ${e.message}`, 'amber');
+          return { id: agent.id, query, result: null };
+        }
+      });
+
+      const searches = await Promise.all(searchPromises);
+      searches.forEach(s => { if(s.result) searchResults[s.id] = s.result; });
+
+      // Render sources tab
+      const srcEl = document.getElementById('out-sources');
+      srcEl.innerHTML = searches.map(s => {
+        if (!s.result) return `<span class="token-amber">⚠ ${s.query} — sin resultados</span>\n`;
+        const urls = (s.result.results||[]).map(r =>
+          `  <span class="token-teal">↳</span> <span class="token-dim">${r.title?.slice(0,60)}</span>\n     <span class="token-dim">${r.url}</span>`
+        ).join('\n');
+        return `<span class="token-cyan">🔍 ${s.query}</span>\n${urls}\n`;
+      }).join('\n');
+
+      // Sources strip
+      if (state.allSources.length) {
+        const strip = document.getElementById('sourcesStrip');
+        strip.style.display = 'flex';
+        strip.innerHTML = state.allSources.map(s =>
+          `<span class="source-tag" title="${s.url}">${s.title || s.url}</span>`
+        ).join('');
+      }
+
+      setNode('search', 'done');
+      log(`${state.totalSearches} búsquedas completadas · ${state.allSources.length} fuentes únicas`, 'green');
+    } else {
+      setNode('search', 'done');
+    }
+
+    // ── 4. SWARM ──
+    setNode('swarm', 'active');
+    log('Lanzando agentes en paralelo...', 'amber');
+    document.getElementById('swarmSection').style.display = 'block';
+    renderSwarmGrid(decomp.agents);
+
+    const agentResults = await runSwarm(decomp.agents, spec + skillCtx, searchResults, webEnabled);
 
     setNode('swarm', 'done');
-    log(`Swarm completado. ${agentResults.filter(r=>r.ok).length}/${agentResults.length} agentes OK`, 'green');
+    log(`Swarm completado · ${agentResults.filter(r=>r.ok).length}/${agentResults.length} OK`, 'green');
 
-    // Consolidate results
     const consolidated = agentResults.map(r => `[${r.agent.name}]\n${r.output}`).join('\n\n---\n\n');
     document.getElementById('out-results').textContent = consolidated;
 
-    // ── PHASE 4: VERIFY ──
+    // ── 5. VERIFY ──
     setNode('verify', 'active');
     log('Verificador analizando resultados...', 'purple');
     switchTab('verify');
 
-    const verifyPrompt = `Eres el agente Verificador. Tu ÚNICO trabajo es encontrar fallos, contradicciones e incertidumbre.
+    const webVerifyNote = webEnabled
+      ? '\n5. ¿Las URLs citadas son reales y corresponden a fuentes primarias?\n6. ¿Los datos coinciden con lo que realmente encontraría en esas fuentes?'
+      : '';
+
+    const verifySys = `Eres el agente Verificador. Tu ÚNICO trabajo es encontrar fallos, contradicciones e incertidumbre.
 NO alabes los resultados. Busca activamente problemas.
 
 Evalúa con criterio estricto:
 1. ¿Hay afirmaciones sin fuente verificable?
-2. ¿Hay contradicciones entre agentes?  
+2. ¿Hay contradicciones entre agentes?
 3. ¿El output cumple la especificación original?
-4. ¿Hay alucinaciones o datos inventados?
+4. ¿Hay alucinaciones o datos inventados?${webVerifyNote}
 
-Al final, emite un veredicto: APROBADO o RECHAZADO con justificación.
-Si APROBADO, extrae el skill aprendido en formato:
-SKILL_NAME: nombre corto
-SKILL_DESC: qué hace este tipo de tarea
+Emite veredicto: APROBADO o RECHAZADO con justificación.
+Si APROBADO, extrae:
+SKILL_NAME: nombre corto (máx 4 palabras)
+SKILL_DESC: qué tipo de tarea realiza este proceso
 SKILL_CONSTRAINT: qué evitar en próximas ejecuciones`;
 
-    const verifyOut = await callLLM(verifyPrompt, `SPEC:\n${spec}\n\nRESULTADOS:\n${consolidated}`, 900);
+    const srcList = state.allSources.length
+      ? `\nFUENTES CONSULTADAS:\n${state.allSources.map(s=>s.url).join('\n')}`
+      : '';
+
+    const verifyOut = await callLLM(verifySys, `SPEC:\n${spec}\n\nRESULTADOS:\n${consolidated}${srcList}`, 1000);
     document.getElementById('out-verify').textContent = verifyOut;
 
     const passed = verifyOut.toUpperCase().includes('APROBADO');
     const badge = document.getElementById('verifyBadge');
     badge.className = `verify-result ${passed ? 'pass' : 'fail'} visible`;
     badge.textContent = passed
-      ? '✓ VERIFICACIÓN SUPERADA — Los resultados son suficientemente confiables para guardar el skill'
-      : '✗ VERIFICACIÓN FALLIDA — Los resultados no superaron el control de calidad. El skill NO se guarda.';
+      ? '✓ VERIFICACIÓN SUPERADA — Resultados suficientemente confiables. Skill guardado.'
+      : '✗ VERIFICACIÓN FALLIDA — Los resultados no superaron el control de calidad. Skill descartado.';
 
     setNode('verify', 'done');
 
-    // ── PHASE 5: SKILL ──
+    // ── 6. SKILL ──
     if (passed) {
       setNode('skill', 'active');
-      log('Extrayendo y guardando skill...', 'amber');
+      log('Guardando skill en el banco...', 'amber');
 
-      // Extract skill from verify output
-      const nameMatch   = verifyOut.match(/SKILL_NAME:\s*(.+)/i);
-      const descMatch   = verifyOut.match(/SKILL_DESC:\s*(.+)/i);
-      const constMatch  = verifyOut.match(/SKILL_CONSTRAINT:\s*(.+)/i);
+      const nameM  = verifyOut.match(/SKILL_NAME:\s*(.+)/i);
+      const descM  = verifyOut.match(/SKILL_DESC:\s*(.+)/i);
+      const constM = verifyOut.match(/SKILL_CONSTRAINT:\s*(.+)/i);
 
       const skill = {
         id: Date.now(),
-        name: nameMatch?.[1]?.trim() || `Skill #${state.skills.length + 1}`,
-        desc: descMatch?.[1]?.trim() || 'Proceso de investigación y análisis estructurado',
-        constraint: constMatch?.[1]?.trim() || 'Verificar siempre las fuentes primarias',
+        name: nameM?.[1]?.trim() || `Skill #${state.skills.length + 1}`,
+        desc: descM?.[1]?.trim() || 'Proceso de investigación estructurado',
+        constraint: constM?.[1]?.trim() || 'Verificar siempre fuentes primarias',
         date: new Date().toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'}),
         runs: state.runs,
-        steps: decomp.estimated_total_steps
+        steps: decomp.estimated_total_steps,
+        webSearch: webEnabled,
+        sourceCount: state.allSources.length
       };
 
       state.skills.push(skill);
       localStorage.setItem('swarm_skills', JSON.stringify(state.skills));
       renderSkills();
       setNode('skill', 'done');
-      log(`✓ Skill "${skill.name}" guardado en el banco`, 'amber');
+      log(`✓ Skill "${skill.name}" guardado`, 'amber');
     } else {
       log('✗ Skill descartado — no superó la verificación', 'red');
     }
 
-    // Update stats
     state.totalSteps += decomp.estimated_total_steps || 0;
-    document.getElementById('stepCounter').innerHTML = `Pasos: <span>${state.totalSteps}</span>`;
+    document.getElementById('stepCountVal').textContent = state.totalSteps;
     updateFooter();
-    log(`Ejecución #${state.runs} completada.`, 'green');
+    log(`── Ejecución #${state.runs} completada ──`, 'green');
 
   } catch (err) {
     log(`ERROR: ${err.message}`, 'red');
@@ -736,30 +887,32 @@ SKILL_CONSTRAINT: qué evitar en próximas ejecuciones`;
   }
 }
 
-// ── RUN AGENTS IN PARALLEL ──
-async function runSwarm(agents, context) {
-  renderSwarmGrid(agents, 'pending');
-  const statuses = Object.fromEntries(agents.map(a => [a.id, 'pending']));
+// ══════════════════════════════════════════
+//  RUN SWARM
+// ══════════════════════════════════════════
+async function runSwarm(agents, context, searchResults, webEnabled) {
+  renderSwarmGrid(agents);
 
   const promises = agents.map(async (agent, i) => {
-    await delay(i * 120); // stagger launches
-    statuses[agent.id] = 'running';
-    updateAgentCard(agent.id, 'running');
+    await delay(i * 100);
+    updateAgentCard(agent.id, 'running', '⟳ ejecutando...');
 
-    const prompt = `Eres ${agent.name}, un agente especializado en: "${agent.task}".
-Ejecuta tu tarea con rigor. Sé conciso pero completo.
-Indica tus fuentes de razonamiento. No inventes datos.
-Limita tu respuesta a lo esencial para tu subtarea.`;
+    const webContext = searchResults[agent.id]
+      ? `\n\nRESULTADOS DE BÚSQUEDA WEB PARA TU TAREA:\n${formatSearchResults(searchResults[agent.id])}`
+      : (webEnabled ? '\n\n[Sin resultados de búsqueda disponibles para esta subtarea]' : '');
+
+    const sys = `Eres ${agent.name}, agente especializado en: "${agent.task}".
+${webEnabled ? 'Se te proporcionan resultados de búsqueda web reales. Úsalos como base factual.' : 'Usa tu conocimiento interno con rigor.'}
+Sé conciso y específico. Cita tus fuentes. No inventes datos.`;
 
     try {
-      const output = await callLLM(prompt, `CONTEXTO GLOBAL:\n${context}\n\nTU TAREA: ${agent.task}`, 400);
-      statuses[agent.id] = 'done';
-      updateAgentCard(agent.id, 'done', agent.steps);
-      log(`✓ ${agent.name} completado (${agent.steps} pasos)`, 'green');
+      const output = await callLLM(sys,
+        `CONTEXTO GLOBAL:\n${context}${webContext}\n\nTU TAREA: ${agent.task}`, 500);
+      updateAgentCard(agent.id, 'done', `✓ ${agent.steps} pasos`);
+      log(`✓ ${agent.name} completado`, 'green');
       return { agent, output, ok: true };
     } catch (e) {
-      statuses[agent.id] = 'failed';
-      updateAgentCard(agent.id, 'failed');
+      updateAgentCard(agent.id, 'failed', `✗ ${e.message}`);
       log(`✗ ${agent.name} falló: ${e.message}`, 'red');
       return { agent, output: `[ERROR: ${e.message}]`, ok: false };
     }
@@ -768,10 +921,11 @@ Limita tu respuesta a lo esencial para tu subtarea.`;
   return Promise.all(promises);
 }
 
-// ── SWARM GRID UI ──
-function renderSwarmGrid(agents, status) {
-  const grid = document.getElementById('swarmGrid');
-  grid.innerHTML = agents.map(a => `
+// ══════════════════════════════════════════
+//  SWARM GRID UI
+// ══════════════════════════════════════════
+function renderSwarmGrid(agents) {
+  document.getElementById('swarmGrid').innerHTML = agents.map(a => `
     <div class="agent-card" id="ac-${a.id}">
       <div class="agent-head">
         <span class="agent-id">${a.id}</span>
@@ -784,17 +938,13 @@ function renderSwarmGrid(agents, status) {
   updateSwarmCounter(0, agents.length);
 }
 
-let doneCount = 0;
-function updateAgentCard(id, status, steps) {
+function updateAgentCard(id, status, stepText) {
   const card = document.getElementById(`ac-${id}`);
   if (!card) return;
   card.className = `agent-card ${status}`;
-  const stepEl = document.getElementById(`as-${id}`);
-  if (status === 'running') stepEl.textContent = '⟳ ejecutando...';
-  if (status === 'done') { doneCount++; stepEl.textContent = `✓ ${steps} pasos`; }
-  if (status === 'failed') stepEl.textContent = '✗ error';
+  document.getElementById(`as-${id}`).textContent = stepText;
+  const done = document.querySelectorAll('.agent-card.done, .agent-card.failed').length;
   const total = document.querySelectorAll('.agent-card').length;
-  const done = document.querySelectorAll('.agent-card.done').length + document.querySelectorAll('.agent-card.failed').length;
   updateSwarmCounter(done, total);
 }
 
@@ -802,32 +952,34 @@ function updateSwarmCounter(done, total) {
   document.getElementById('swarmCounter').textContent = `${done} / ${total} completados`;
 }
 
-// ── FORMAT DECOMP ──
-function formatDecomp(d) {
-  const agents = (d.agents||[]).map(a =>
-    `  <span class="token-cyan">${a.id}</span> <span class="token-amber">${a.name}</span> <span class="token-dim">·</span> ${a.task} <span class="token-dim">[~${a.steps} pasos]</span>`
+// ══════════════════════════════════════════
+//  FORMAT DECOMP
+// ══════════════════════════════════════════
+function formatDecomp(d, webEnabled) {
+  const rows = (d.agents||[]).map(a =>
+    `  <span class="token-cyan">${a.id}</span> <span class="token-amber">${a.name}</span> <span class="token-dim">·</span> ${a.task}${webEnabled && a.search_query ? `\n     <span class="token-teal">🔍 query:</span> <span class="token-dim">${a.search_query}</span>` : ''} <span class="token-dim">[~${a.steps} pasos]</span>`
   ).join('\n');
-  return `<span class="token-cyan">PLAN DE DESCOMPOSICIÓN</span>
-<span class="token-dim">───────────────────────────────────</span>
-${agents}
+  return `<span class="token-cyan">PLAN DE DESCOMPOSICIÓN${webEnabled ? ' · BÚSQUEDA WEB ACTIVADA' : ''}</span>
+<span class="token-dim">─────────────────────────────────────────</span>
+${rows}
 
-<span class="token-dim">───────────────────────────────────</span>
-<span class="token-green">Resumen:</span> ${d.summary || ''}
-<span class="token-amber">Pasos estimados:</span> ${d.estimated_total_steps || ''}
-<span class="token-red">Riesgo de calidad:</span> ${d.quality_risk || ''}`;
+<span class="token-dim">─────────────────────────────────────────</span>
+<span class="token-green">Resumen:</span> ${d.summary||''}
+<span class="token-amber">Pasos estimados:</span> ${d.estimated_total_steps||''}
+<span class="token-red">Riesgo de calidad:</span> ${d.quality_risk||''}`;
 }
 
-// ── SKILLS UI ──
+// ══════════════════════════════════════════
+//  SKILLS
+// ══════════════════════════════════════════
 function renderSkills() {
   const container = document.getElementById('skillListContainer');
-  const count = document.getElementById('skillCount');
-  count.textContent = `${state.skills.length} skills`;
+  document.getElementById('skillCount').textContent = `${state.skills.length} skills`;
 
-  if (state.skills.length === 0) {
-    container.innerHTML = `<div class="empty-skills"><div class="empty-icon">◎</div>Aún no hay skills guardados.<br>Ejecuta el loop y supera la verificación para acumular conocimiento.</div>`;
+  if (!state.skills.length) {
+    container.innerHTML = `<div class="empty-skills"><div class="empty-icon">◎</div>Aún no hay skills guardados.<br>Ejecuta el loop y supera la verificación para acumular conocimiento reutilizable.</div>`;
     return;
   }
-
   container.innerHTML = `<div class="skill-list">${
     [...state.skills].reverse().map(s => `
     <div class="skill-item">
@@ -838,6 +990,7 @@ function renderSkills() {
       </div>
       <div class="skill-desc">${s.desc}</div>
       <div class="skill-constraints">↳ CONSTRAINT: ${s.constraint}</div>
+      ${s.webSearch ? `<span class="skill-web-badge">🔍 ${s.sourceCount||0} fuentes web</span>` : ''}
     </div>`).join('')
   }</div>`;
 }
@@ -851,12 +1004,11 @@ function clearSkills() {
 }
 
 function updateFooter() {
-  document.getElementById('totalRuns').textContent =
-    `Total runs: ${state.runs} · Skills acumulados: ${state.skills.length}`;
+  document.getElementById('footerStats').textContent =
+    `Runs: ${state.runs} · Búsquedas: ${state.totalSearches} · Skills: ${state.skills.length}`;
 }
 
-// ── UTILS ──
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+const delay = ms => new Promise(r => setTimeout(r, ms));
 </script>
 </body>
 </html>
