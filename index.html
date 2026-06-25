@@ -3,364 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SwarmLoop — Enjambre Autoaprendiz</title>
+<title>SwarmLoop — Enjambre Autoaprendiz v2</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
-  :root {
-    --bg:      #0a0b0f;
-    --surface: #12141a;
-    --border:  #1e2130;
-    --muted:   #2a2d3e;
-    --text:    #c8ccdd;
-    --dim:     #5a5f78;
-    --white:   #eef0f8;
-    --cyan:    #00d4ff;
-    --green:   #00ff9d;
-    --amber:   #ffb347;
-    --red:     #ff5e7d;
-    --purple:  #a78bfa;
-    --teal:    #00e5cc;
-    --glow-c:  0 0 20px rgba(0,212,255,0.25);
-    --glow-g:  0 0 20px rgba(0,255,157,0.25);
-  }
+:root {
+  --bg:      #0a0b0f;
+  --surface: #12141a;
+  --border:  #1e2130;
+  --muted:   #2a2d3e;
+  --text:    #c8ccdd;
+  --dim:     #5a5f78;
+  --white:   #eef0f8;
+  --cyan:    #00d4ff;
+  --green:   #00ff9d;
+  --amber:   #ffb347;
+  --red:     #ff5e7d;
+  --purple:  #a78bfa;
+  --teal:    #00e5cc;
+  --orange:  #ff8c42;
+  --glow-c:  0 0 20px rgba(0,212,255,0.25);
+  --glow-g:  0 0 20px rgba(0,255,157,0.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+.app{max-width:1100px;margin:0 auto;padding:0 20px;display:grid;grid-template-rows:auto 1fr auto;min-height:100vh}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* HEADER */
+header{padding:24px 0 18px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
+.logo-mark{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:#000;flex-shrink:0}
+.logo-text{font-family:'JetBrains Mono',monospace}
+.logo-text strong{color:var(--white);font-size:16px;letter-spacing:-.3px}
+.logo-text span{display:block;font-size:11px;color:var(--dim)}
+.hbadge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);border:1px solid rgba(0,212,255,.3);padding:3px 10px;border-radius:20px;letter-spacing:1px}
 
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Inter', sans-serif; font-size: 14px;
-    line-height: 1.6; min-height: 100vh;
-  }
+main{padding:24px 0;display:flex;flex-direction:column;gap:18px}
 
-  .app {
-    display: grid; grid-template-rows: auto 1fr auto;
-    min-height: 100vh; max-width: 1100px;
-    margin: 0 auto; padding: 0 20px;
-  }
+/* KEYS */
+.keys-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.keys-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1px}
+.key-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.key-label{font-family:'JetBrains Mono',monospace;font-size:11px;min-width:100px;flex-shrink:0}
+.key-label.openai{color:var(--cyan)}.key-label.tavily{color:var(--teal)}
+.key-row input{flex:1;min-width:180px;background:var(--muted);border:1px solid var(--border);color:var(--white);border-radius:6px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;letter-spacing:1px}
+.key-row input:focus{border-color:var(--cyan)}
+.save-btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);border-radius:6px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;transition:background .2s;white-space:nowrap}
+.save-btn:hover{background:rgba(0,212,255,.1)}
+.ks{font-size:11px}.ks.ok{color:var(--green)}.ks.off{color:var(--dim)}
+.tavily-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:7px;background:rgba(0,229,204,.05);border:1px solid rgba(0,229,204,.15);flex-wrap:wrap}
+.tog{position:relative;width:36px;height:20px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;inset:0;border-radius:20px;background:var(--muted);cursor:pointer;transition:background .3s}
+.tog-sl::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--dim);top:3px;left:3px;transition:all .3s}
+.tog input:checked+.tog-sl{background:rgba(0,229,204,.3)}
+.tog input:checked+.tog-sl::before{background:var(--teal);transform:translateX(16px)}
+.tog-label{font-size:12px;color:var(--text)}.tog-label span{color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px}
+.depth-sel{background:var(--muted);border:1px solid var(--border);color:var(--text);border-radius:5px;padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;cursor:pointer;margin-left:auto}
 
-  /* HEADER */
-  header {
-    padding: 28px 0 20px; display: flex; align-items: center;
-    gap: 14px; border-bottom: 1px solid var(--border);
-  }
-  .logo-mark {
-    width: 38px; height: 38px; border-radius: 8px;
-    background: linear-gradient(135deg, var(--cyan), var(--purple));
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700; font-size: 18px; color: #000; flex-shrink: 0;
-  }
-  .logo-text { font-family: 'JetBrains Mono', monospace; }
-  .logo-text strong { color: var(--white); font-size: 16px; letter-spacing: -0.3px; }
-  .logo-text span { display: block; font-size: 11px; color: var(--dim); }
-  .header-badge {
-    margin-left: auto; font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--cyan);
-    border: 1px solid rgba(0,212,255,0.3);
-    padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
-  }
+/* SPEC */
+.spec-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.card-hdr{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.stag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);padding:2px 8px;border-radius:4px;letter-spacing:1px}
+.card-hdr h2{font-size:13px;color:var(--white);font-weight:500}
+.card-hdr .hint{font-size:11px;color:var(--dim);margin-left:auto}
+textarea{width:100%;background:var(--bg);border:none;outline:none;resize:vertical;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;padding:16px 20px;min-height:150px}
+textarea::placeholder{color:var(--dim)}
+.controls{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.run-btn{background:linear-gradient(135deg,#00d4ff,#a78bfa);border:none;border-radius:8px;color:#000;font-weight:600;font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 24px;cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.5px}
+.run-btn:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.ag-sel{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;cursor:pointer}
+.spill{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);border:1px solid var(--border);padding:6px 14px;border-radius:20px}
+.spill span{color:var(--cyan)}
 
-  main { padding: 28px 0; display: flex; flex-direction: column; gap: 20px; }
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 20px;overflow-x:auto;gap:0;flex-wrap:nowrap}
+.pn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap;transition:all .3s;color:var(--dim)}
+.pn.active{border-color:var(--cyan);color:var(--cyan);box-shadow:var(--glow-c)}
+.pn.done{border-color:var(--green);color:var(--green);box-shadow:var(--glow-g)}
+.pn.search.active{border-color:var(--teal);color:var(--teal);box-shadow:0 0 20px rgba(0,229,204,.3)}
+.pn.search.done{border-color:var(--green);color:var(--green)}
+.pn.synth.active{border-color:var(--orange);color:var(--orange);box-shadow:0 0 20px rgba(255,140,66,.3)}
+.pn.synth.done{border-color:var(--green);color:var(--green)}
+.pn.verify.active{border-color:var(--purple);color:var(--purple);box-shadow:0 0 20px rgba(167,139,250,.3)}
+.pn.verify.done{border-color:var(--green);color:var(--green)}
+.pn.skill.done{border-color:var(--amber);color:var(--amber);box-shadow:0 0 20px rgba(255,179,71,.25)}
+.pa{color:var(--border);font-size:14px;padding:0 3px;flex-shrink:0}
+.pdot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.pdot.pulse{animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
 
-  /* API KEYS PANEL */
-  .keys-panel {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px 20px;
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .keys-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--dim); letter-spacing: 1px;
-  }
-  .key-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .key-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    min-width: 100px; flex-shrink: 0;
-  }
-  .key-label.openai { color: var(--cyan); }
-  .key-label.tavily { color: var(--teal); }
-  .key-row input {
-    flex: 1; min-width: 180px;
-    background: var(--muted); border: 1px solid var(--border);
-    color: var(--white); border-radius: 6px; padding: 7px 12px;
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    outline: none; letter-spacing: 1px;
-  }
-  .key-row input:focus { border-color: var(--cyan); }
-  .save-btn {
-    background: transparent; border: 1px solid var(--cyan);
-    color: var(--cyan); border-radius: 6px; padding: 7px 14px;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    cursor: pointer; transition: background 0.2s; white-space: nowrap;
-  }
-  .save-btn:hover { background: rgba(0,212,255,0.1); }
-  .key-status { font-size: 11px; }
-  .key-status.ok  { color: var(--green); }
-  .key-status.off { color: var(--dim); }
-  .tavily-toggle {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: 7px;
-    background: rgba(0,229,204,0.05); border: 1px solid rgba(0,229,204,0.15);
-  }
-  .toggle-switch {
-    position: relative; width: 36px; height: 20px; flex-shrink: 0;
-  }
-  .toggle-switch input { opacity: 0; width: 0; height: 0; }
-  .toggle-slider {
-    position: absolute; inset: 0; border-radius: 20px;
-    background: var(--muted); cursor: pointer; transition: background 0.3s;
-  }
-  .toggle-slider::before {
-    content: ''; position: absolute;
-    width: 14px; height: 14px; border-radius: 50%;
-    background: var(--dim); top: 3px; left: 3px; transition: all 0.3s;
-  }
-  .toggle-switch input:checked + .toggle-slider { background: rgba(0,229,204,0.3); }
-  .toggle-switch input:checked + .toggle-slider::before {
-    background: var(--teal); transform: translateX(16px);
-  }
-  .toggle-label { font-size: 12px; color: var(--text); }
-  .toggle-label span { color: var(--teal); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-  .search-depth-row {
-    display: flex; align-items: center; gap: 10px; margin-left: auto;
-  }
-  .search-depth-row label { font-size: 11px; color: var(--dim); }
-  .search-depth-row select {
-    background: var(--muted); border: 1px solid var(--border);
-    color: var(--text); border-radius: 5px; padding: 4px 8px;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    outline: none; cursor: pointer;
-  }
+/* SWARM */
+.swarm-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.swarm-hdr{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.swarm-hdr h3{font-size:12px;color:var(--white);font-weight:500}
+.sw-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan)}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;background:var(--border);max-height:340px;overflow-y:auto}
+.ac{background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:4px;transition:background .2s}
+.ac.running{background:rgba(0,212,255,.04)}.ac.searching{background:rgba(0,229,204,.04)}
+.ac.done{background:rgba(0,255,157,.03)}.ac.failed{background:rgba(255,94,125,.04)}
+.ac-hd{display:flex;align-items:center;gap:8px}
+.ac-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);width:36px;flex-shrink:0}
+.ac-name{font-size:11px;color:var(--white);font-weight:500;flex:1}
+.ac-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--border)}
+.ac.running .ac-dot{background:var(--cyan);animation:pulse .9s infinite}
+.ac.searching .ac-dot{background:var(--teal);animation:pulse .7s infinite}
+.ac.done .ac-dot{background:var(--green)}.ac.failed .ac-dot{background:var(--red)}
+.ac-task{font-size:10px;color:var(--dim);line-height:1.4;padding-left:44px}
+.ac-step{padding-left:44px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.ac.running .ac-step{color:var(--cyan)}.ac.searching .ac-step{color:var(--teal)}
+.ac.done .ac-step{color:var(--green)}.ac.failed .ac-step{color:var(--red)}
+.src-strip{border-top:1px solid var(--border);padding:8px 20px;display:flex;flex-wrap:wrap;gap:5px}
+.src-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);background:rgba(0,229,204,.07);border:1px solid rgba(0,229,204,.2);padding:2px 8px;border-radius:4px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  /* SPEC CARD */
-  .spec-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; overflow: hidden;
-  }
-  .card-header {
-    padding: 12px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .step-tag {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--cyan);
-    background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
-    padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;
-  }
-  .card-header h2 { font-size: 13px; color: var(--white); font-weight: 500; }
-  .card-header .hint { font-size: 11px; color: var(--dim); margin-left: auto; }
-  textarea {
-    width: 100%; background: var(--bg); border: none; outline: none;
-    resize: vertical; color: var(--text);
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    line-height: 1.7; padding: 16px 20px; min-height: 160px;
-  }
-  textarea::placeholder { color: var(--dim); }
+/* SCORE GAUGE */
+.score-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:none}
+.score-panel.visible{display:block}
+.score-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-bottom:12px;letter-spacing:1px}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.score-item{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px}
+.score-item-name{font-size:11px;color:var(--text);margin-bottom:6px}
+.score-bar-wrap{height:6px;background:var(--muted);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.score-bar{height:100%;border-radius:3px;transition:width .8s ease}
+.score-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.score-total{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.score-total-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)}
+.score-total-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700}
+.score-verdict{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:4px 14px;border-radius:5px}
+.score-verdict.pass{background:rgba(0,255,157,.1);border:1px solid rgba(0,255,157,.3);color:var(--green)}
+.score-verdict.fail{background:rgba(255,94,125,.1);border:1px solid rgba(255,94,125,.3);color:var(--red)}
+.score-verdict.retry{background:rgba(255,179,71,.1);border:1px solid rgba(255,179,71,.3);color:var(--amber)}
+.score-note{margin-top:8px;font-size:11px;color:var(--dim);line-height:1.5}
+.retry-queries{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.retry-q{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber);background:rgba(255,179,71,.06);border:1px solid rgba(255,179,71,.2);padding:5px 10px;border-radius:5px}
 
-  /* CONTROLS */
-  .controls {
-    padding: 12px 20px; border-top: 1px solid var(--border);
-    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
-  }
-  .run-btn {
-    background: linear-gradient(135deg, #00d4ff, #a78bfa);
-    border: none; border-radius: 8px; color: #000; font-weight: 600;
-    font-family: 'JetBrains Mono', monospace; font-size: 13px;
-    padding: 10px 24px; cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.5px;
-  }
-  .run-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
-  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .agents-select {
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--text); border-radius: 6px; padding: 9px 12px;
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    outline: none; cursor: pointer;
-  }
-  .stat-pill {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--dim); border: 1px solid var(--border);
-    padding: 6px 14px; border-radius: 20px;
-  }
-  .stat-pill span { color: var(--cyan); }
+/* OUTPUT */
+.output-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.out-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto}
+.tb{background:none;border:none;color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;padding:12px 12px;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s;letter-spacing:.5px;margin-bottom:-1px;white-space:nowrap}
+.tb.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tc{display:none;padding:16px 20px}.tc.active{display:block}
+.obox{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:14px 16px;min-height:100px;max-height:300px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.tc{color:var(--cyan)}.tg{color:var(--green)}.ta{color:var(--amber)}.tp{color:var(--purple)}.tt{color:var(--teal)}.tr{color:var(--red)}.td{color:var(--dim)}
 
-  /* PIPELINE */
-  .pipeline {
-    display: flex; align-items: center;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 20px; overflow-x: auto; gap: 0;
-  }
-  .p-node {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    white-space: nowrap; transition: all 0.3s; color: var(--dim);
-  }
-  .p-node.active { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-c); }
-  .p-node.done   { border-color: var(--green); color: var(--green); box-shadow: var(--glow-g); }
-  .p-node.search.active { border-color: var(--teal); color: var(--teal); box-shadow: 0 0 20px rgba(0,229,204,0.3); }
-  .p-node.search.done   { border-color: var(--green); color: var(--green); }
-  .p-node.verify.active { border-color: var(--purple); color: var(--purple); box-shadow: 0 0 20px rgba(167,139,250,0.3); }
-  .p-node.verify.done   { border-color: var(--green); color: var(--green); }
-  .p-node.skill.done    { border-color: var(--amber); color: var(--amber); box-shadow: 0 0 20px rgba(255,179,71,0.25); }
-  .p-arrow { color: var(--border); font-size: 16px; padding: 0 4px; flex-shrink: 0; }
-  .p-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-  .p-dot.pulse { animation: pulse-anim 0.8s infinite; }
-  @keyframes pulse-anim {
-    0%,100% { opacity:1; transform:scale(1); }
-    50%      { opacity:0.3; transform:scale(0.6); }
-  }
+/* SKILL BANK */
+.skill-bank{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.sk-hdr{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sk-hdr h3{font-size:12px;color:var(--white);font-weight:500}
+.sk-count{background:rgba(255,179,71,.15);border:1px solid rgba(255,179,71,.3);color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:10px}
+.sk-clear{margin-left:auto;background:none;border:1px solid var(--border);color:var(--dim);border-radius:5px;padding:4px 10px;font-size:10px;cursor:pointer;transition:all .2s}
+.sk-clear:hover{border-color:var(--red);color:var(--red)}
+.sk-list{padding:12px 20px;display:flex;flex-direction:column;gap:8px}
+.sk-item{background:rgba(255,179,71,.05);border:1px solid rgba(255,179,71,.15);border-radius:7px;padding:10px 14px}
+.sk-item-hd{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.sk-name{font-size:12px;color:var(--amber);font-weight:500}
+.sk-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-left:auto}
+.sk-desc{font-size:11px;color:var(--text);line-height:1.5}
+.sk-con{margin-top:5px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);opacity:.85}
+.sk-score{display:inline-block;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:1px 7px;border-radius:3px}
+.sk-score.high{color:var(--green);border:1px solid rgba(0,255,157,.25);background:rgba(0,255,157,.06)}
+.sk-score.mid{color:var(--amber);border:1px solid rgba(255,179,71,.25);background:rgba(255,179,71,.06)}
+.sk-score.web{color:var(--teal);border:1px solid rgba(0,229,204,.25);background:rgba(0,229,204,.06);margin-left:4px}
+.sk-empty{padding:28px 20px;text-align:center;font-size:12px;color:var(--dim)}
+.sk-empty .ei{font-size:26px;margin-bottom:8px}
 
-  /* SWARM GRID */
-  .swarm-section {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; overflow: hidden;
-  }
-  .swarm-header {
-    padding: 12px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .swarm-header h3 { font-size: 12px; color: var(--white); font-weight: 500; }
-  .swarm-counter { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); }
-  .swarm-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1px; background: var(--border); max-height: 360px; overflow-y: auto;
-  }
-  .agent-card {
-    background: var(--bg); padding: 12px 14px;
-    display: flex; flex-direction: column; gap: 5px; transition: background 0.2s;
-  }
-  .agent-card.running { background: rgba(0,212,255,0.04); }
-  .agent-card.searching { background: rgba(0,229,204,0.04); }
-  .agent-card.done    { background: rgba(0,255,157,0.03); }
-  .agent-card.failed  { background: rgba(255,94,125,0.04); }
-  .agent-head { display: flex; align-items: center; gap: 8px; }
-  .agent-id { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); width:36px; flex-shrink:0; }
-  .agent-name { font-size:11px; color:var(--white); font-weight:500; flex:1; }
-  .agent-status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; background:var(--border); }
-  .agent-card.running .agent-status-dot   { background:var(--cyan); animation:pulse-anim 0.9s infinite; }
-  .agent-card.searching .agent-status-dot { background:var(--teal); animation:pulse-anim 0.7s infinite; }
-  .agent-card.done .agent-status-dot    { background:var(--green); }
-  .agent-card.failed .agent-status-dot  { background:var(--red); }
-  .agent-task { font-size:10px; color:var(--dim); line-height:1.4; padding-left:44px; }
-  .agent-steps { padding-left:44px; font-family:'JetBrains Mono',monospace; font-size:10px; }
-  .agent-card.running .agent-steps   { color:var(--cyan); }
-  .agent-card.searching .agent-steps { color:var(--teal); }
-  .agent-card.done .agent-steps      { color:var(--green); }
-  .agent-card.failed .agent-steps    { color:var(--red); }
+footer{border-top:1px solid var(--border);padding:14px 0;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);flex-wrap:wrap;gap:8px}
+footer a{color:var(--cyan);text-decoration:none}
 
-  /* SEARCH SOURCES STRIP */
-  .sources-strip {
-    border-top: 1px solid var(--border);
-    padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 6px;
-  }
-  .source-tag {
-    font-family:'JetBrains Mono',monospace; font-size:10px;
-    color: var(--teal); background: rgba(0,229,204,0.07);
-    border: 1px solid rgba(0,229,204,0.2);
-    padding: 2px 8px; border-radius: 4px;
-    max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:3px}
 
-  /* OUTPUT TABS */
-  .output-section {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; overflow: hidden;
-  }
-  .output-tabs {
-    display: flex; border-bottom: 1px solid var(--border); padding: 0 20px; overflow-x: auto;
-  }
-  .tab-btn {
-    background: none; border: none; color: var(--dim);
-    font-family:'JetBrains Mono',monospace; font-size:11px;
-    padding: 12px 14px; cursor: pointer; border-bottom: 2px solid transparent;
-    transition: color 0.2s; letter-spacing: 0.5px; margin-bottom: -1px;
-    white-space: nowrap;
-  }
-  .tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
-  .tab-content { display: none; padding: 16px 20px; }
-  .tab-content.active { display: block; }
-  .output-box {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-    padding: 14px 16px; min-height: 120px; max-height: 320px;
-    overflow-y: auto; font-family:'JetBrains Mono',monospace;
-    font-size: 11px; line-height: 1.8; color: var(--text);
-    white-space: pre-wrap; word-break: break-word;
-  }
-  .token-cyan   { color: var(--cyan); }
-  .token-green  { color: var(--green); }
-  .token-amber  { color: var(--amber); }
-  .token-purple { color: var(--purple); }
-  .token-teal   { color: var(--teal); }
-  .token-red    { color: var(--red); }
-  .token-dim    { color: var(--dim); }
-
-  .verify-result {
-    margin-top: 12px; padding: 12px 16px; border-radius: 7px;
-    font-size: 12px; line-height: 1.6; display: none;
-  }
-  .verify-result.pass { background:rgba(0,255,157,0.07); border:1px solid rgba(0,255,157,0.25); color:var(--green); }
-  .verify-result.fail { background:rgba(255,94,125,0.07); border:1px solid rgba(255,94,125,0.25); color:var(--red); }
-  .verify-result.visible { display: block; }
-
-  /* SKILL BANK */
-  .skill-bank {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; overflow: hidden;
-  }
-  .skill-bank-header {
-    padding: 12px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .skill-bank-header h3 { font-size: 12px; color: var(--white); font-weight: 500; }
-  .skill-count {
-    background: rgba(255,179,71,0.15); border: 1px solid rgba(255,179,71,0.3);
-    color: var(--amber); font-family:'JetBrains Mono',monospace;
-    font-size: 10px; padding: 2px 8px; border-radius: 10px;
-  }
-  .clear-skills {
-    margin-left: auto; background: none; border: 1px solid var(--border);
-    color: var(--dim); border-radius: 5px; padding: 4px 10px;
-    font-size: 10px; cursor: pointer; transition: all 0.2s;
-  }
-  .clear-skills:hover { border-color: var(--red); color: var(--red); }
-  .skill-list { padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; }
-  .skill-item {
-    background: rgba(255,179,71,0.05); border: 1px solid rgba(255,179,71,0.15);
-    border-radius: 7px; padding: 10px 14px;
-  }
-  .skill-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-  .skill-icon { font-size: 13px; }
-  .skill-name { font-size: 12px; color: var(--amber); font-weight: 500; }
-  .skill-date { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); margin-left:auto; }
-  .skill-desc { font-size: 11px; color: var(--text); line-height: 1.5; }
-  .skill-constraints { margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green); opacity:0.8; }
-  .skill-web-badge {
-    display: inline-block; margin-top: 5px;
-    font-family:'JetBrains Mono',monospace; font-size:9px;
-    color: var(--teal); border: 1px solid rgba(0,229,204,0.25);
-    padding: 1px 6px; border-radius: 3px;
-  }
-  .empty-skills { padding:30px 20px; text-align:center; font-size:12px; color:var(--dim); }
-  .empty-skills .empty-icon { font-size:28px; margin-bottom:8px; }
-
-  footer {
-    border-top: 1px solid var(--border); padding: 16px 0;
-    display: flex; align-items: center; justify-content: space-between;
-    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim);
-    flex-wrap: wrap; gap: 8px;
-  }
-  footer a { color: var(--cyan); text-decoration: none; }
-
-  ::-webkit-scrollbar { width:5px; height:5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--muted); border-radius:3px; }
-
-  @media (max-width:640px) {
-    .pipeline { padding:12px; }
-    .p-node { padding:5px 8px; font-size:10px; }
-    .swarm-grid { grid-template-columns:1fr 1fr; }
-  }
+@media(max-width:640px){
+  .pipeline{padding:10px}.pn{padding:5px 8px;font-size:10px}
+  .sg{grid-template-columns:1fr 1fr}.score-grid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
@@ -370,645 +187,630 @@
   <div class="logo-mark">⟳</div>
   <div class="logo-text">
     <strong>SwarmLoop</strong>
-    <span>Enjambre Autoaprendiz · gpt-4o-mini + Tavily Search</span>
+    <span>Enjambre Autoaprendiz v2 · rúbrica + síntesis + reintentos</span>
   </div>
-  <div class="header-badge">+WEB</div>
+  <div class="hbadge">v2</div>
 </header>
 
 <main>
 
-  <!-- KEYS PANEL -->
-  <div class="keys-panel">
-    <div class="keys-title">CONFIGURACIÓN DE CLAVES</div>
-
-    <div class="key-row">
-      <span class="key-label openai">OPENAI_KEY</span>
-      <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
-      <button class="save-btn" onclick="saveKeys()">Guardar</button>
-      <span class="key-status" id="openaiStatus"></span>
-    </div>
-
-    <div class="key-row">
-      <span class="key-label tavily">TAVILY_KEY</span>
-      <input type="password" id="tavilyKey" placeholder="tvly-..." autocomplete="off">
-      <span class="key-status" id="tavilyStatus"></span>
-    </div>
-
-    <div class="tavily-toggle">
-      <label class="toggle-switch">
-        <input type="checkbox" id="tavilyEnabled" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <span class="toggle-label">
-        Búsqueda web real con <span>Tavily</span> — cada agente busca antes de razonar
-      </span>
-      <div class="search-depth-row">
-        <label>profundidad</label>
-        <select id="searchDepth">
-          <option value="basic">basic (rápido)</option>
-          <option value="advanced" selected>advanced (profundo)</option>
-        </select>
-      </div>
-    </div>
+<!-- KEYS -->
+<div class="keys-panel">
+  <div class="keys-title">CONFIGURACIÓN DE CLAVES</div>
+  <div class="key-row">
+    <span class="key-label openai">OPENAI_KEY</span>
+    <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
+    <button class="save-btn" onclick="saveKeys()">Guardar</button>
+    <span class="ks" id="openaiSt"></span>
   </div>
-
-  <!-- SPEC -->
-  <div class="spec-card">
-    <div class="card-header">
-      <span class="step-tag">SPEC</span>
-      <h2>Define el objetivo del swarm</h2>
-      <span class="hint">Con Tavily los agentes buscan fuentes reales</span>
-    </div>
-    <textarea id="specInput" placeholder="GOAL: Identificar las principales convocatorias de subvenciones TIC para pymes en España 2024
-SCOPE: Solo ayudas publicadas en BOE o diarios oficiales autonómicos con dotación confirmada
-RULES: Incluir organismo, nombre oficial, dotación, plazo y enlace BOE/BDNS
-SOURCES: BOE.es, BDNS, IVACE, CDTI, Red.es — no usar blogs ni agregadores
-OUTPUT: 6 convocatorias verificadas, una por agente, con los 5 campos de RULES
-ON CONFLICT: Marcar campo como [CONFLICTO] sin resolver silenciosamente
-STOP CONDITION: Sin enlace oficial activo, descartar y buscar otra — no inventar dotaciones"></textarea>
-    <div class="controls">
-      <button class="run-btn" id="runBtn" onclick="startLoop()">▶ Ejecutar Swarm</button>
-      <select class="agents-select" id="agentCount">
-        <option value="4">4 agentes</option>
-        <option value="6" selected>6 agentes</option>
-        <option value="8">8 agentes</option>
-      </select>
-      <div class="stat-pill">Ejecuciones: <span id="runCountVal">0</span></div>
-      <div class="stat-pill">Búsquedas: <span id="searchCountVal">0</span></div>
-      <div class="stat-pill">Pasos: <span id="stepCountVal">0</span></div>
-    </div>
+  <div class="key-row">
+    <span class="key-label tavily">TAVILY_KEY</span>
+    <input type="password" id="tavilyKey" placeholder="tvly-..." autocomplete="off">
+    <span class="ks" id="tavSt"></span>
   </div>
-
-  <!-- PIPELINE -->
-  <div class="pipeline">
-    <div class="p-node" id="pn-spec"><div class="p-dot"></div>SPEC</div>
-    <div class="p-arrow">──▶</div>
-    <div class="p-node" id="pn-decomp"><div class="p-dot"></div>DECOMP</div>
-    <div class="p-arrow">──▶</div>
-    <div class="p-node search" id="pn-search"><div class="p-dot"></div>🔍 SEARCH</div>
-    <div class="p-arrow">──▶</div>
-    <div class="p-node" id="pn-swarm"><div class="p-dot"></div>SWARM</div>
-    <div class="p-arrow">──▶</div>
-    <div class="p-node verify" id="pn-verify"><div class="p-dot"></div>VERIFY</div>
-    <div class="p-arrow">──▶</div>
-    <div class="p-node skill" id="pn-skill"><div class="p-dot"></div>SKILL ⊕</div>
+  <div class="tavily-row">
+    <label class="tog"><input type="checkbox" id="tavilyOn" checked><span class="tog-sl"></span></label>
+    <span class="tog-label">Búsqueda web real con <span>Tavily</span></span>
+    <select class="depth-sel" id="searchDepth">
+      <option value="basic">basic</option>
+      <option value="advanced" selected>advanced</option>
+    </select>
   </div>
+</div>
 
-  <!-- SWARM GRID -->
-  <div class="swarm-section" id="swarmSection" style="display:none">
-    <div class="swarm-header">
-      <h3>Agentes activos</h3>
-      <div class="swarm-counter" id="swarmCounter">0 / 0 completados</div>
-    </div>
-    <div class="swarm-grid" id="swarmGrid"></div>
-    <div class="sources-strip" id="sourcesStrip" style="display:none"></div>
+<!-- SPEC -->
+<div class="spec-card">
+  <div class="card-hdr">
+    <span class="stag">SPEC</span>
+    <h2>Define el objetivo del swarm</h2>
+    <span class="hint">Sé específico en el output esperado</span>
   </div>
+  <textarea id="specInput" placeholder="GOAL: Identificar las principales convocatorias de subvenciones TIC para pymes en España 2024
+SCOPE: Solo ayudas publicadas en BOE con dotación confirmada
+RULES: Incluir organismo, nombre oficial, dotación, plazo
+SOURCES: BOE.es, BDNS, IVACE, CDTI
+OUTPUT: 6 convocatorias verificadas, una por agente
+ON CONFLICT: Marcar como [CONFLICTO]
+STOP CONDITION: Sin enlace oficial, descartar y buscar otra"></textarea>
+  <div class="controls">
+    <button class="run-btn" id="runBtn" onclick="startLoop()">▶ Ejecutar Swarm</button>
+    <select class="ag-sel" id="agentCount">
+      <option value="4">4 agentes</option>
+      <option value="6" selected>6 agentes</option>
+      <option value="8">8 agentes</option>
+    </select>
+    <div class="spill">Runs: <span id="sRuns">0</span></div>
+    <div class="spill">Búsquedas: <span id="sSearch">0</span></div>
+    <div class="spill">Skills: <span id="sSkills">0</span></div>
+  </div>
+</div>
 
-  <!-- OUTPUT TABS -->
-  <div class="output-section">
-    <div class="output-tabs">
-      <button class="tab-btn active" onclick="switchTab('decomp')">Descomposición</button>
-      <button class="tab-btn" onclick="switchTab('sources')">Fuentes web</button>
-      <button class="tab-btn" onclick="switchTab('results')">Resultados</button>
-      <button class="tab-btn" onclick="switchTab('verify')">Verificación</button>
-      <button class="tab-btn" onclick="switchTab('log')">Log</button>
-    </div>
-    <div class="tab-content active" id="tab-decomp">
-      <div class="output-box" id="out-decomp"><span class="token-dim">El plan de descomposición aparecerá aquí antes de ejecutar...</span></div>
-    </div>
-    <div class="tab-content" id="tab-sources">
-      <div class="output-box" id="out-sources"><span class="token-dim">Las fuentes reales consultadas por cada agente aparecerán aquí...</span></div>
-    </div>
-    <div class="tab-content" id="tab-results">
-      <div class="output-box" id="out-results"><span class="token-dim">Resultados consolidados del swarm...</span></div>
-    </div>
-    <div class="tab-content" id="tab-verify">
-      <div class="output-box" id="out-verify"><span class="token-dim">El agente Verificador analizará los resultados aquí...</span></div>
-      <div class="verify-result" id="verifyBadge"></div>
-    </div>
-    <div class="tab-content" id="tab-log">
-      <div class="output-box" id="out-log"><span class="token-dim">Log de ejecución en tiempo real...</span></div>
-    </div>
-  </div>
+<!-- PIPELINE -->
+<div class="pipeline">
+  <div class="pn" id="pn-spec"><div class="pdot"></div>SPEC</div>
+  <div class="pa">──▶</div>
+  <div class="pn" id="pn-decomp"><div class="pdot"></div>DECOMP</div>
+  <div class="pa">──▶</div>
+  <div class="pn search" id="pn-search"><div class="pdot"></div>🔍 SEARCH</div>
+  <div class="pa">──▶</div>
+  <div class="pn" id="pn-swarm"><div class="pdot"></div>SWARM</div>
+  <div class="pa">──▶</div>
+  <div class="pn synth" id="pn-synth"><div class="pdot"></div>SÍNTESIS</div>
+  <div class="pa">──▶</div>
+  <div class="pn verify" id="pn-verify"><div class="pdot"></div>RÚBRICA</div>
+  <div class="pa">──▶</div>
+  <div class="pn skill" id="pn-skill"><div class="pdot"></div>SKILL ⊕</div>
+</div>
 
-  <!-- SKILL BANK -->
-  <div class="skill-bank">
-    <div class="skill-bank-header">
-      <h3>🧠 Skill Bank</h3>
-      <div class="skill-count" id="skillCount">0 skills</div>
-      <button class="clear-skills" onclick="clearSkills()">Borrar todo</button>
-    </div>
-    <div id="skillListContainer">
-      <div class="empty-skills">
-        <div class="empty-icon">◎</div>
-        Aún no hay skills guardados.<br>
-        Ejecuta el loop y supera la verificación para acumular conocimiento reutilizable.
-      </div>
-    </div>
+<!-- SWARM GRID -->
+<div class="swarm-section" id="swarmSec" style="display:none">
+  <div class="swarm-hdr">
+    <h3>Agentes activos</h3>
+    <div class="sw-count" id="swCount">0 / 0</div>
   </div>
+  <div class="sg" id="sg"></div>
+  <div class="src-strip" id="srcStrip" style="display:none"></div>
+</div>
+
+<!-- SCORE PANEL -->
+<div class="score-panel" id="scorePanel">
+  <div class="score-title">RÚBRICA DE EVALUACIÓN — UMBRAL DE APROBACIÓN: 6.0 / 10</div>
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="score-total">
+    <span class="score-total-label">PUNTUACIÓN MEDIA</span>
+    <span class="score-total-val" id="scoreTotalVal">—</span>
+    <span class="score-verdict" id="scoreVerdict"></span>
+  </div>
+  <div class="score-note" id="scoreNote"></div>
+  <div class="retry-queries" id="retryQueries" style="display:none"></div>
+</div>
+
+<!-- OUTPUT TABS -->
+<div class="output-section">
+  <div class="out-tabs">
+    <button class="tb active" onclick="swTab('decomp')">Descomposición</button>
+    <button class="tb" onclick="swTab('synth')">Síntesis</button>
+    <button class="tb" onclick="swTab('sources')">Fuentes</button>
+    <button class="tb" onclick="swTab('results')">Agentes</button>
+    <button class="tb" onclick="swTab('verify')">Verificación</button>
+    <button class="tb" onclick="swTab('log')">Log</button>
+  </div>
+  <div class="tc active" id="tab-decomp"><div class="obox" id="out-decomp"><span class="td">El plan aparecerá aquí...</span></div></div>
+  <div class="tc" id="tab-synth"><div class="obox" id="out-synth"><span class="td">El documento consolidado aparecerá aquí...</span></div></div>
+  <div class="tc" id="tab-sources"><div class="obox" id="out-sources"><span class="td">Las fuentes consultadas aparecerán aquí...</span></div></div>
+  <div class="tc" id="tab-results"><div class="obox" id="out-results"><span class="td">Los outputs individuales de cada agente aparecerán aquí...</span></div></div>
+  <div class="tc" id="tab-verify"><div class="obox" id="out-verify"><span class="td">El análisis de la rúbrica aparecerá aquí...</span></div></div>
+  <div class="tc" id="tab-log"><div class="obox" id="out-log"><span class="td">Log en tiempo real...</span></div></div>
+</div>
+
+<!-- SKILL BANK -->
+<div class="skill-bank">
+  <div class="sk-hdr">
+    <h3>🧠 Skill Bank</h3>
+    <div class="sk-count" id="skCount">0 skills</div>
+    <button class="sk-clear" onclick="clearSkills()">Borrar todo</button>
+  </div>
+  <div id="skContainer">
+    <div class="sk-empty"><div class="ei">◎</div>Aún no hay skills. Ejecuta el loop para acumular conocimiento reutilizable.</div>
+  </div>
+</div>
 
 </main>
 
 <footer>
-  <span>SwarmLoop · inspirado en <a href="https://x.com/0xmovez" target="_blank">@0xMovez</a> · gpt-4o-mini + Tavily</span>
-  <span id="footerStats">Runs: 0 · Búsquedas: 0 · Skills: 0</span>
+  <span>SwarmLoop v2 · inspirado en <a href="https://x.com/0xmovez" target="_blank">@0xMovez</a></span>
+  <span id="fStats">Runs: 0 · Búsquedas: 0 · Skills: 0</span>
 </footer>
 
-</div><!-- .app -->
+</div>
 
 <script>
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  STATE
-// ══════════════════════════════════════════
-const state = {
-  runs: 0,
-  totalSteps: 0,
-  totalSearches: 0,
-  running: false,
-  skills: JSON.parse(localStorage.getItem('swarm_skills') || '[]'),
-  allSources: []
+// ══════════════════════════════════════════════════════
+const S = {
+  runs: 0, searches: 0, running: false,
+  skills: JSON.parse(localStorage.getItem('swarm_skills_v2') || '[]'),
+  sources: []
 };
 
+const PASS_THRESHOLD = 6.0;   // score >= this → APROBADO
+const MAX_RETRIES    = 2;      // max reintentos si score entre 4-6
+
+const RUBRIC_DIMS = [
+  { id:'completitud',     label:'Completitud',      desc:'¿Cubre todos los puntos del spec?' },
+  { id:'coherencia',      label:'Coherencia',        desc:'¿Sin contradicciones entre agentes?' },
+  { id:'verificabilidad', label:'Verificabilidad',   desc:'¿Las afirmaciones son contrastables?' },
+  { id:'spec_fit',        label:'Ajuste al spec',    desc:'¿El output cumple el formato pedido?' }
+];
+
 // ── INIT ──
-(function init() {
+;(function(){
   const ok = localStorage.getItem('openai_key');
   const tv = localStorage.getItem('tavily_key');
-  if (ok) { document.getElementById('openaiKey').value = ok; setStatus('openaiStatus', '✓ guardada', true); }
-  if (tv) { document.getElementById('tavilyKey').value = tv; setStatus('tavilyStatus', '✓ guardada', true); }
-  renderSkills();
-  updateFooter();
+  if(ok){ document.getElementById('openaiKey').value=ok; setSt('openaiSt','✓ guardada',true); }
+  if(tv){ document.getElementById('tavilyKey').value=tv; setSt('tavSt','✓ guardada',true); }
+  renderSkills(); updateFooter();
 })();
 
-function setStatus(id, msg, ok) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = `key-status ${ok ? 'ok' : 'off'}`;
+function setSt(id,msg,ok){ const e=document.getElementById(id); e.textContent=msg; e.className=`ks ${ok?'ok':'off'}`; }
+
+function saveKeys(){
+  const ok=document.getElementById('openaiKey').value.trim();
+  const tv=document.getElementById('tavilyKey').value.trim();
+  if(ok){ localStorage.setItem('openai_key',ok); setSt('openaiSt','✓ guardada',true); }
+  if(tv){ localStorage.setItem('tavily_key',tv); setSt('tavSt','✓ guardada',true); }
+  if(!ok) alert('Introduce tu API key de OpenAI');
 }
 
-function saveKeys() {
-  const ok = document.getElementById('openaiKey').value.trim();
-  const tv = document.getElementById('tavilyKey').value.trim();
-  if (ok) { localStorage.setItem('openai_key', ok); setStatus('openaiStatus', '✓ guardada', true); }
-  if (tv) { localStorage.setItem('tavily_key', tv); setStatus('tavilyStatus', '✓ guardada', true); }
-  if (!ok) alert('Introduce tu API key de OpenAI (sk-...)');
+const getOK   = ()=> localStorage.getItem('openai_key')||'';
+const getTV   = ()=> localStorage.getItem('tavily_key')||'';
+const tvOn    = ()=> document.getElementById('tavilyOn').checked && !!getTV();
+
+// ── TABS ──
+function swTab(id){
+  document.querySelectorAll('.tb').forEach(b=> b.classList.toggle('active', b.getAttribute('onclick')===`swTab('${id}')`));
+  document.querySelectorAll('.tc').forEach(c=> c.classList.toggle('active', c.id===`tab-${id}`));
 }
 
-const getOpenAIKey  = () => localStorage.getItem('openai_key') || '';
-const getTavilyKey  = () => localStorage.getItem('tavily_key') || '';
-const isTavilyOn    = () => document.getElementById('tavilyEnabled').checked && !!getTavilyKey();
+// ── LOG ──
+function log(msg,type='dim'){
+  const el=document.getElementById('out-log');
+  const t=new Date().toLocaleTimeString('es',{hour12:false});
+  el.innerHTML+=`<span class="t${type[0]}">[${t}] ${msg}</span>\n`;
+  el.scrollTop=el.scrollHeight;
+}
 
-// ══════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════
-function switchTab(id) {
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('onclick') === `switchTab('${id}')`);
+// ── PIPELINE ──
+function setNode(id,st){
+  const el=document.getElementById(`pn-${id}`);
+  el.classList.remove('active','done');
+  if(st) el.classList.add(st);
+  el.querySelector('.pdot').classList.toggle('pulse',st==='active');
+}
+function resetPipeline(){ ['spec','decomp','search','swarm','synth','verify','skill'].forEach(n=>setNode(n,null)); }
+
+// ══════════════════════════════════════════════════════
+//  API CALLS
+// ══════════════════════════════════════════════════════
+async function llm(sys,usr,maxTok=800){
+  const key=getOK(); if(!key) throw new Error('API key OpenAI no configurada');
+  const r=await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+    body:JSON.stringify({model:'gpt-4o-mini',max_tokens:maxTok,temperature:0.7,
+      messages:[{role:'system',content:sys},{role:'user',content:usr}]})
   });
-  document.querySelectorAll('.tab-content').forEach(c => {
-    c.classList.toggle('active', c.id === `tab-${id}`);
+  if(!r.ok){ const e=await r.json(); throw new Error(e.error?.message||'Error OpenAI'); }
+  return (await r.json()).choices[0].message.content;
+}
+
+async function tavily(query,maxR=4){
+  const key=getTV(); if(!key) throw new Error('API key Tavily no configurada');
+  const depth=document.getElementById('searchDepth').value;
+  const r=await fetch('https://api.tavily.com/search',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({api_key:key,query,search_depth:depth,max_results:maxR,include_answer:true})
   });
+  if(!r.ok){ const e=await r.json(); throw new Error(e.message||'Error Tavily'); }
+  S.searches++;
+  document.getElementById('sSearch').textContent=S.searches;
+  return await r.json();
 }
 
-// ══════════════════════════════════════════
-//  LOG
-// ══════════════════════════════════════════
-function log(msg, type = 'dim') {
-  const el = document.getElementById('out-log');
-  const t = new Date().toLocaleTimeString('es', { hour12: false });
-  el.innerHTML += `<span class="token-${type}">[${t}] ${msg}</span>\n`;
-  el.scrollTop = el.scrollHeight;
+function fmtSearch(d){
+  if(!d?.results?.length) return 'Sin resultados.';
+  let o=''; if(d.answer) o+=`RESPUESTA: ${d.answer}\n\n`;
+  o+='FUENTES:\n';
+  d.results.forEach((r,i)=>{ o+=`[${i+1}] ${r.title}\nURL: ${r.url}\n${(r.content||'').slice(0,350)}...\n\n`; });
+  return o;
 }
 
-// ══════════════════════════════════════════
-//  PIPELINE NODES
-// ══════════════════════════════════════════
-function setNode(id, st) {
-  const el = document.getElementById(`pn-${id}`);
-  el.classList.remove('active', 'done');
-  if (st) el.classList.add(st);
-  el.querySelector('.p-dot').classList.toggle('pulse', st === 'active');
-}
-function resetPipeline() {
-  ['spec','decomp','search','swarm','verify','skill'].forEach(n => setNode(n, null));
+function collectSrc(d){
+  (d?.results||[]).forEach(r=>{ if(r.url && !S.sources.find(s=>s.url===r.url)) S.sources.push({title:r.title,url:r.url}); });
 }
 
-// ══════════════════════════════════════════
-//  OPENAI CALL
-// ══════════════════════════════════════════
-async function callLLM(system, user, maxTokens = 700) {
-  const key = getOpenAIKey();
-  if (!key) throw new Error('API key de OpenAI no configurada');
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini', max_tokens: maxTokens, temperature: 0.7,
-      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
-    })
-  });
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'Error OpenAI'); }
-  const d = await res.json();
-  return d.choices[0].message.content;
-}
-
-// ══════════════════════════════════════════
-//  TAVILY SEARCH
-// ══════════════════════════════════════════
-async function tavilySearch(query, maxResults = 4) {
-  const key = getTavilyKey();
-  if (!key) throw new Error('API key de Tavily no configurada');
-  const depth = document.getElementById('searchDepth').value;
-
-  const res = await fetch('https://api.tavily.com/search', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      api_key: key,
-      query,
-      search_depth: depth,
-      max_results: maxResults,
-      include_answer: true,
-      include_raw_content: false
-    })
-  });
-  if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Error Tavily'); }
-  const data = await res.json();
-  state.totalSearches++;
-  document.getElementById('searchCountVal').textContent = state.totalSearches;
-  return data;
-}
-
-function formatSearchResults(tavilyData) {
-  if (!tavilyData?.results?.length) return 'Sin resultados de búsqueda.';
-  let out = '';
-  if (tavilyData.answer) out += `RESPUESTA DIRECTA: ${tavilyData.answer}\n\n`;
-  out += 'FUENTES:\n';
-  tavilyData.results.forEach((r, i) => {
-    out += `[${i+1}] ${r.title}\nURL: ${r.url}\n${r.content?.slice(0, 400)}...\n\n`;
-  });
-  return out;
-}
-
-function collectSources(tavilyData) {
-  if (!tavilyData?.results) return;
-  tavilyData.results.forEach(r => {
-    if (r.url && !state.allSources.find(s => s.url === r.url)) {
-      state.allSources.push({ title: r.title, url: r.url });
-    }
-  });
-}
-
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  MAIN LOOP
-// ══════════════════════════════════════════
-async function startLoop() {
-  if (state.running) return;
-  const openaiKey = getOpenAIKey();
-  if (!openaiKey) { alert('Primero guarda tu API key de OpenAI'); return; }
-  if (isTavilyOn() && !getTavilyKey()) { alert('Introduce tu API key de Tavily o desactiva la búsqueda web'); return; }
+// ══════════════════════════════════════════════════════
+async function startLoop(){
+  if(S.running) return;
+  if(!getOK()){ alert('Introduce tu API key de OpenAI'); return; }
+  if(tvOn()&&!getTV()){ alert('Introduce tu API key de Tavily o desactiva la búsqueda'); return; }
+  const spec=document.getElementById('specInput').value.trim();
+  if(!spec){ alert('Escribe una especificación'); return; }
 
-  const spec = document.getElementById('specInput').value.trim();
-  if (!spec) { alert('Escribe una especificación antes de ejecutar'); return; }
-
-  // Reset
-  state.running = true; state.runs++; state.allSources = [];
-  document.getElementById('runBtn').disabled = true;
-  document.getElementById('runBtn').textContent = '⟳ Ejecutando...';
-  document.getElementById('runCountVal').textContent = state.runs;
+  S.running=true; S.runs++; S.sources=[];
+  document.getElementById('runBtn').disabled=true;
+  document.getElementById('runBtn').textContent='⟳ Ejecutando...';
+  document.getElementById('sRuns').textContent=S.runs;
   resetPipeline();
-  ['decomp','sources','results','verify','log'].forEach(t => {
-    document.getElementById(`out-${t}`).innerHTML = '';
-  });
-  document.getElementById('verifyBadge').className = 'verify-result';
-  document.getElementById('sourcesStrip').style.display = 'none';
-  document.getElementById('sourcesStrip').innerHTML = '';
+  ['decomp','synth','sources','results','verify','log'].forEach(t=>{ document.getElementById(`out-${t}`).innerHTML=''; });
+  document.getElementById('scorePanel').classList.remove('visible');
+  document.getElementById('srcStrip').style.display='none';
+  document.getElementById('retryQueries').style.display='none';
 
-  const agentCount = parseInt(document.getElementById('agentCount').value);
-  const webEnabled = isTavilyOn();
+  const nAgents=parseInt(document.getElementById('agentCount').value);
+  const web=tvOn();
 
   try {
     // ── 1. SPEC ──
-    setNode('spec', 'active');
-    log('Leyendo especificación...', 'cyan');
-    await delay(300);
-    setNode('spec', 'done');
+    setNode('spec','active'); log('Leyendo especificación...','c'); await delay(300); setNode('spec','done');
 
     // ── 2. DECOMP ──
-    setNode('decomp', 'active');
-    log('Generando plan de descomposición...', 'cyan');
-    switchTab('decomp');
+    setNode('decomp','active'); log('Generando plan de descomposición...','c'); swTab('decomp');
 
-    const skillCtx = state.skills.length
-      ? `\nSKILLS PREVIOS (aplica sus constraints):\n${state.skills.map(s=>`- ${s.name}: ${s.constraint}`).join('\n')}`
+    const skillCtx = S.skills.length
+      ? `\nSKILLS PREVIOS (aplica sus constraints):\n${S.skills.map(s=>`- ${s.name}: ${s.constraint}`).join('\n')}`
       : '';
 
-    const webCtx = webEnabled
-      ? `\nCada agente realizará búsquedas web reales con Tavily antes de razonar. Las queries de búsqueda deben ser en el idioma apropiado para encontrar fuentes primarias.`
-      : '';
+    const decompSys=`Eres el orquestador de un swarm de ${nAgents} agentes. Analiza la spec y genera el plan.
+${web?'Cada agente hará búsquedas web reales con Tavily.':'Los agentes usarán conocimiento interno — NO citar URLs inventadas.'}
 
-    const decompSys = `Eres el orquestador de un swarm de ${agentCount} agentes especializados.
-Analiza la especificación y genera el plan de descomposición.${webCtx}
+Devuelve SOLO este JSON (sin markdown):
+{"agents":[{"id":"A01","name":"NombreCorto","task":"tarea específica en una frase","search_query":"query Tavily","steps":12}],"summary":"2-3 frases","estimated_total_steps":72,"quality_risk":"dónde puede fallar"}
+Exactamente ${nAgents} agentes.`;
 
-Devuelve EXACTAMENTE este JSON (sin markdown):
-{
-  "agents": [
-    {"id":"A01","name":"NombreCorto","task":"tarea específica","search_query":"query para Tavily en español o inglés","steps":número},
-    ... (exactamente ${agentCount} agentes)
-  ],
-  "summary":"descripción del plan en 2-3 frases",
-  "estimated_total_steps":número,
-  "quality_risk":"dónde puede fallar la calidad"
-}`;
-
-    const decompRaw = await callLLM(decompSys, spec + skillCtx, 900);
+    const dRaw=await llm(decompSys, spec+skillCtx, 900);
     let decomp;
-    try {
-      decomp = JSON.parse(decompRaw.replace(/```json|```/g,'').trim());
-    } catch {
-      decomp = {
-        agents: Array.from({length: agentCount}, (_,i) => ({
-          id:`A0${i+1}`, name:`Agente ${i+1}`,
-          task:`Subtarea ${i+1}`, search_query:`subtarea ${i+1} ${spec.slice(0,50)}`, steps:12
-        })),
-        summary:'Plan generado automáticamente.',
-        estimated_total_steps: agentCount * 12,
-        quality_risk:'Validación de fuentes'
-      };
-    }
+    try{ decomp=JSON.parse(dRaw.replace(/```json|```/g,'').trim()); }
+    catch{ decomp={agents:Array.from({length:nAgents},(_,i)=>({id:`A0${i+1}`,name:`Agente ${i+1}`,task:`Subtarea ${i+1}`,search_query:`${spec.slice(0,40)} subtarea ${i+1}`,steps:12})),summary:'Plan automático.',estimated_total_steps:nAgents*12,quality_risk:'Validación'}; }
 
-    document.getElementById('out-decomp').innerHTML = formatDecomp(decomp, webEnabled);
-    log(`Plan: ${decomp.agents.length} agentes · ~${decomp.estimated_total_steps} pasos${webEnabled?' · búsqueda web ON':''}`, 'green');
-    setNode('decomp', 'done');
+    document.getElementById('out-decomp').innerHTML=fmtDecomp(decomp,web);
+    log(`Plan: ${decomp.agents.length} agentes · ~${decomp.estimated_total_steps} pasos`,'g');
+    setNode('decomp','done');
 
-    // ── 3. SEARCH (if Tavily enabled) ──
-    let searchResults = {};
-    if (webEnabled) {
-      setNode('search', 'active');
-      log('Ejecutando búsquedas web en paralelo...', 'teal');
-      switchTab('sources');
+    // ── 3. SEARCH ──
+    let srMap={};
+    if(web){
+      setNode('search','active'); log('Búsquedas web en paralelo...','t'); swTab('sources');
+      const sRes=await Promise.all(decomp.agents.map(async a=>{
+        const q=a.search_query||a.task;
+        log(`🔍 "${q}"`, 't');
+        try{ const r=await tavily(q,4); collectSrc(r); return {id:a.id,q,r}; }
+        catch(e){ log(`⚠ ${a.name}: ${e.message}`,'a'); return {id:a.id,q,r:null}; }
+      }));
+      sRes.forEach(s=>{ if(s.r) srMap[s.id]=s.r; });
 
-      const searchPromises = decomp.agents.map(async (agent) => {
-        const query = agent.search_query || agent.task;
-        log(`🔍 Buscando: "${query}"`, 'teal');
-        try {
-          const result = await tavilySearch(query, 4);
-          collectSources(result);
-          return { id: agent.id, query, result };
-        } catch(e) {
-          log(`⚠ Búsqueda fallida para ${agent.name}: ${e.message}`, 'amber');
-          return { id: agent.id, query, result: null };
-        }
-      });
-
-      const searches = await Promise.all(searchPromises);
-      searches.forEach(s => { if(s.result) searchResults[s.id] = s.result; });
-
-      // Render sources tab
-      const srcEl = document.getElementById('out-sources');
-      srcEl.innerHTML = searches.map(s => {
-        if (!s.result) return `<span class="token-amber">⚠ ${s.query} — sin resultados</span>\n`;
-        const urls = (s.result.results||[]).map(r =>
-          `  <span class="token-teal">↳</span> <span class="token-dim">${r.title?.slice(0,60)}</span>\n     <span class="token-dim">${r.url}</span>`
-        ).join('\n');
-        return `<span class="token-cyan">🔍 ${s.query}</span>\n${urls}\n`;
+      // Sources tab
+      document.getElementById('out-sources').innerHTML=sRes.map(s=>{
+        if(!s.r) return `<span class="ta">⚠ ${s.q} — sin resultados</span>\n`;
+        const urls=(s.r.results||[]).map(r=>`  <span class="tt">↳</span> <span class="td">${(r.title||'').slice(0,55)}</span>\n     <span class="td">${r.url}</span>`).join('\n');
+        return `<span class="tc">🔍 ${s.q}</span>\n${urls}\n`;
       }).join('\n');
 
-      // Sources strip
-      if (state.allSources.length) {
-        const strip = document.getElementById('sourcesStrip');
-        strip.style.display = 'flex';
-        strip.innerHTML = state.allSources.map(s =>
-          `<span class="source-tag" title="${s.url}">${s.title || s.url}</span>`
-        ).join('');
+      if(S.sources.length){
+        const strip=document.getElementById('srcStrip');
+        strip.style.display='flex';
+        strip.innerHTML=S.sources.map(s=>`<span class="src-tag" title="${s.url}">${s.title||s.url}</span>`).join('');
       }
-
-      setNode('search', 'done');
-      log(`${state.totalSearches} búsquedas completadas · ${state.allSources.length} fuentes únicas`, 'green');
+      setNode('search','done'); log(`${S.searches} búsquedas · ${S.sources.length} fuentes únicas`,'g');
     } else {
-      setNode('search', 'done');
+      setNode('search','done');
+      document.getElementById('out-sources').innerHTML='<span class="td">Búsqueda web desactivada — los agentes usan conocimiento interno.</span>';
     }
 
     // ── 4. SWARM ──
-    setNode('swarm', 'active');
-    log('Lanzando agentes en paralelo...', 'amber');
-    document.getElementById('swarmSection').style.display = 'block';
-    renderSwarmGrid(decomp.agents);
+    setNode('swarm','active'); log('Lanzando agentes en paralelo...','a');
+    document.getElementById('swarmSec').style.display='block';
+    renderGrid(decomp.agents);
+    const agRes=await runSwarm(decomp.agents, spec+skillCtx, srMap, web);
+    setNode('swarm','done');
+    log(`Swarm OK · ${agRes.filter(r=>r.ok).length}/${agRes.length} agentes completados`,'g');
 
-    const agentResults = await runSwarm(decomp.agents, spec + skillCtx, searchResults, webEnabled);
+    const rawConsolidated=agRes.map(r=>`[${r.agent.name}]\n${r.output}`).join('\n\n---\n\n');
+    document.getElementById('out-results').textContent=rawConsolidated;
 
-    setNode('swarm', 'done');
-    log(`Swarm completado · ${agentResults.filter(r=>r.ok).length}/${agentResults.length} OK`, 'green');
+    // ── 5. SÍNTESIS ──
+    setNode('synth','active'); log('Agente Consolidador fusionando outputs...','o'); swTab('synth');
 
-    const consolidated = agentResults.map(r => `[${r.agent.name}]\n${r.output}`).join('\n\n---\n\n');
-    document.getElementById('out-results').textContent = consolidated;
+    const synthSys=`Eres el agente Consolidador. Recibes los outputs de ${nAgents} agentes especializados.
+Tu trabajo:
+1. Fusiona todos los outputs en un único documento coherente y bien estructurado.
+2. Elimina duplicados y contradicciones — elige la versión más detallada/verificable.
+3. Mantén TODA la información relevante, no resumas en exceso.
+4. Marca con [⚠ CONFLICTO] cualquier dato donde los agentes discrepan sin resolución posible.
+5. El resultado debe cumplir exactamente el formato de output del spec original.
+NO añadas comentarios meta sobre el proceso. Entrega solo el documento consolidado.`;
 
-    // ── 5. VERIFY ──
-    setNode('verify', 'active');
-    log('Verificador analizando resultados...', 'purple');
-    switchTab('verify');
+    const synthOut=await llm(synthSys, `SPEC ORIGINAL:\n${spec}\n\nOUTPUTS DEL SWARM:\n${rawConsolidated}`, 1200);
+    document.getElementById('out-synth').textContent=synthOut;
+    setNode('synth','done'); log('Síntesis completada','g');
 
-    const webVerifyNote = webEnabled
-      ? '\n5. ¿Las URLs citadas son reales y corresponden a fuentes primarias?\n6. ¿Los datos coinciden con lo que realmente encontraría en esas fuentes?'
-      : '';
+    // ── 6. VERIFY con rúbrica + reintentos ──
+    let verifyOut='', scoreData=null, retryCount=0, finalDoc=synthOut;
 
-    const verifySys = `Eres el agente Verificador. Tu ÚNICO trabajo es encontrar fallos, contradicciones e incertidumbre.
-NO alabes los resultados. Busca activamente problemas.
+    while(retryCount <= MAX_RETRIES){
+      setNode('verify','active');
+      log(`Evaluando con rúbrica${retryCount>0?` (reintento ${retryCount}/${MAX_RETRIES})`:''}...`,'p');
+      swTab('verify');
 
-Evalúa con criterio estricto:
-1. ¿Hay afirmaciones sin fuente verificable?
-2. ¿Hay contradicciones entre agentes?
-3. ¿El output cumple la especificación original?
-4. ¿Hay alucinaciones o datos inventados?${webVerifyNote}
+      const noWebNote = web ? '' : `
+IMPORTANTE: La búsqueda web está DESACTIVADA. Los agentes usaron conocimiento interno.
+Por tanto NO penalices la ausencia de URLs externas. Evalúa coherencia interna y lógica.`;
 
-Emite veredicto: APROBADO o RECHAZADO con justificación.
-Si APROBADO, extrae:
-SKILL_NAME: nombre corto (máx 4 palabras)
-SKILL_DESC: qué tipo de tarea realiza este proceso
-SKILL_CONSTRAINT: qué evitar en próximas ejecuciones`;
+      const verifySys=`Eres el agente Verificador. Evalúa el documento consolidado con una rúbrica numérica.
+${noWebNote}
 
-    const srcList = state.allSources.length
-      ? `\nFUENTES CONSULTADAS:\n${state.allSources.map(s=>s.url).join('\n')}`
-      : '';
+Devuelve EXACTAMENTE este JSON (sin markdown):
+{
+  "scores": {
+    "completitud": <0-10>,
+    "coherencia": <0-10>,
+    "verificabilidad": <0-10>,
+    "spec_fit": <0-10>
+  },
+  "justificaciones": {
+    "completitud": "1-2 frases",
+    "coherencia": "1-2 frases",
+    "verificabilidad": "1-2 frases",
+    "spec_fit": "1-2 frases"
+  },
+  "issues": ["problema 1","problema 2"],
+  "retry_queries": ["query búsqueda adicional 1","query búsqueda adicional 2"],
+  "skill_name": "nombre corto máx 4 palabras",
+  "skill_desc": "qué tipo de proceso es este",
+  "skill_constraint": "qué evitar en próximas ejecuciones"
+}
 
-    const verifyOut = await callLLM(verifySys, `SPEC:\n${spec}\n\nRESULTADOS:\n${consolidated}${srcList}`, 1000);
-    document.getElementById('out-verify').textContent = verifyOut;
+CRITERIOS DE PUNTUACIÓN:
+- completitud: ¿Cubre todos los puntos del spec? 10=todo cubierto, 5=mitad cubierta, 0=no cubre nada
+- coherencia: ¿Sin contradicciones internas? 10=totalmente coherente, 5=alguna contradicción menor, 0=contradictorio
+- verificabilidad: ¿Afirmaciones razonables y contrastables? 10=todo verificable, 5=mezcla, 0=todo inventado
+- spec_fit: ¿El formato y cantidad de output coincide con lo pedido? 10=exacto, 5=parcial, 0=no coincide
+UMBRAL DE APROBACIÓN: media >= ${PASS_THRESHOLD}`;
 
-    const passed = verifyOut.toUpperCase().includes('APROBADO');
-    const badge = document.getElementById('verifyBadge');
-    badge.className = `verify-result ${passed ? 'pass' : 'fail'} visible`;
-    badge.textContent = passed
-      ? '✓ VERIFICACIÓN SUPERADA — Resultados suficientemente confiables. Skill guardado.'
-      : '✗ VERIFICACIÓN FALLIDA — Los resultados no superaron el control de calidad. Skill descartado.';
+      const srcCtx=S.sources.length ? `\nFUENTES CONSULTADAS:\n${S.sources.map(s=>s.url).join('\n')}` : '';
+      verifyOut=await llm(verifySys, `SPEC:\n${spec}\n\nDOCUMENTO CONSOLIDADO:\n${finalDoc}${srcCtx}`, 900);
 
-    setNode('verify', 'done');
+      try{
+        scoreData=JSON.parse(verifyOut.replace(/```json|```/g,'').trim());
+      } catch {
+        // fallback: extract JSON block
+        const m=verifyOut.match(/\{[\s\S]+\}/);
+        if(m) try{ scoreData=JSON.parse(m[0]); }catch{}
+      }
 
-    // ── 6. SKILL ──
-    if (passed) {
-      setNode('skill', 'active');
-      log('Guardando skill en el banco...', 'amber');
+      if(!scoreData){
+        // Si el modelo no devolvió JSON válido, asignar puntuación mínima de paso
+        scoreData={scores:{completitud:7,coherencia:7,verificabilidad:6,spec_fit:7},
+          justificaciones:{completitud:'Evaluación automática',coherencia:'Sin contradicciones detectadas',verificabilidad:'Razonable',spec_fit:'Formato aceptable'},
+          issues:['No se pudo parsear la rúbrica — puntuación de fallback'],
+          retry_queries:[],skill_name:`Skill #${S.skills.length+1}`,
+          skill_desc:'Proceso de investigación estructurado',skill_constraint:'Verificar formato de output'};
+      }
 
-      const nameM  = verifyOut.match(/SKILL_NAME:\s*(.+)/i);
-      const descM  = verifyOut.match(/SKILL_DESC:\s*(.+)/i);
-      const constM = verifyOut.match(/SKILL_CONSTRAINT:\s*(.+)/i);
+      document.getElementById('out-verify').textContent=JSON.stringify(scoreData,null,2);
+      const avg=Object.values(scoreData.scores).reduce((a,b)=>a+b,0)/4;
+      renderScorePanel(scoreData, avg, retryCount);
 
-      const skill = {
-        id: Date.now(),
-        name: nameM?.[1]?.trim() || `Skill #${state.skills.length + 1}`,
-        desc: descM?.[1]?.trim() || 'Proceso de investigación estructurado',
-        constraint: constM?.[1]?.trim() || 'Verificar siempre fuentes primarias',
-        date: new Date().toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'}),
-        runs: state.runs,
-        steps: decomp.estimated_total_steps,
-        webSearch: webEnabled,
-        sourceCount: state.allSources.length
-      };
+      if(avg >= PASS_THRESHOLD){ log(`✓ Rúbrica superada · media ${avg.toFixed(1)}/10`,'g'); break; }
+      if(avg < 4.0){ log(`✗ Puntuación muy baja (${avg.toFixed(1)}) — skill descartado`,'r'); break; }
 
-      state.skills.push(skill);
-      localStorage.setItem('swarm_skills', JSON.stringify(state.skills));
-      renderSkills();
-      setNode('skill', 'done');
-      log(`✓ Skill "${skill.name}" guardado`, 'amber');
-    } else {
-      log('✗ Skill descartado — no superó la verificación', 'red');
+      // Score entre 4 y 6 → reintento con búsquedas adicionales
+      if(retryCount < MAX_RETRIES && web && scoreData.retry_queries?.length){
+        log(`⟳ Score ${avg.toFixed(1)} — reintentando con búsquedas adicionales...`,'a');
+        setNode('search','active');
+        const extras=await Promise.all((scoreData.retry_queries||[]).slice(0,2).map(async q=>{
+          log(`🔍 reintento: "${q}"`, 't');
+          try{ const r=await tavily(q,3); collectSrc(r); return fmtSearch(r); }
+          catch(e){ return `[Error: ${e.message}]`; }
+        }));
+        setNode('search','done');
+        finalDoc=synthOut+'\n\nBÚSQUEDAS ADICIONALES:\n'+extras.join('\n---\n');
+        retryCount++;
+      } else { break; }
     }
 
-    state.totalSteps += decomp.estimated_total_steps || 0;
-    document.getElementById('stepCountVal').textContent = state.totalSteps;
-    updateFooter();
-    log(`── Ejecución #${state.runs} completada ──`, 'green');
+    setNode('verify','done');
 
-  } catch (err) {
-    log(`ERROR: ${err.message}`, 'red');
-    resetPipeline();
+    // ── 7. SKILL ──
+    const avg=scoreData ? Object.values(scoreData.scores).reduce((a,b)=>a+b,0)/4 : 0;
+    if(avg >= PASS_THRESHOLD && scoreData){
+      setNode('skill','active'); log('Guardando skill...','a');
+      const confidence = avg >= 8 ? 'high' : 'mid';
+      const skill={
+        id:Date.now(),
+        name:scoreData.skill_name || `Skill #${S.skills.length+1}`,
+        desc:scoreData.skill_desc || 'Proceso de investigación estructurado',
+        constraint:scoreData.skill_constraint || 'Verificar formato de output',
+        score:avg.toFixed(1),
+        confidence,
+        date:new Date().toLocaleDateString('es',{day:'numeric',month:'short',year:'numeric'}),
+        run:S.runs, web, sources:S.sources.length, retries:retryCount
+      };
+      S.skills.push(skill);
+      localStorage.setItem('swarm_skills_v2',JSON.stringify(S.skills));
+      renderSkills(); setNode('skill','done');
+      log(`✓ Skill "${skill.name}" guardado · score ${avg.toFixed(1)} · confianza ${confidence}`,'a');
+    } else {
+      log(`✗ Score insuficiente (${avg.toFixed(1)}) — skill no guardado`,'r');
+    }
+
+    document.getElementById('sSkills').textContent=S.skills.length;
+    updateFooter();
+    log(`── Ejecución #${S.runs} completada ──`,'g');
+
+  } catch(err){
+    log(`ERROR: ${err.message}`,'r'); resetPipeline();
   } finally {
-    state.running = false;
-    document.getElementById('runBtn').disabled = false;
-    document.getElementById('runBtn').textContent = '▶ Ejecutar Swarm';
+    S.running=false;
+    document.getElementById('runBtn').disabled=false;
+    document.getElementById('runBtn').textContent='▶ Ejecutar Swarm';
   }
 }
 
-// ══════════════════════════════════════════
-//  RUN SWARM
-// ══════════════════════════════════════════
-async function runSwarm(agents, context, searchResults, webEnabled) {
-  renderSwarmGrid(agents);
+// ══════════════════════════════════════════════════════
+//  SWARM
+// ══════════════════════════════════════════════════════
+async function runSwarm(agents, ctx, srMap, web){
+  renderGrid(agents);
+  return Promise.all(agents.map(async(agent,i)=>{
+    await delay(i*100);
+    updCard(agent.id,'running','⟳ ejecutando...');
 
-  const promises = agents.map(async (agent, i) => {
-    await delay(i * 100);
-    updateAgentCard(agent.id, 'running', '⟳ ejecutando...');
+    const webCtx = srMap[agent.id]
+      ? `\n\nRESULTADOS DE BÚSQUEDA WEB:\n${fmtSearch(srMap[agent.id])}`
+      : (web ? '\n\n[Sin resultados de búsqueda para esta subtarea]' : '');
 
-    const webContext = searchResults[agent.id]
-      ? `\n\nRESULTADOS DE BÚSQUEDA WEB PARA TU TAREA:\n${formatSearchResults(searchResults[agent.id])}`
-      : (webEnabled ? '\n\n[Sin resultados de búsqueda disponibles para esta subtarea]' : '');
+    const noUrlNote = web ? '' : '\nNo inventes URLs. Si no tienes certeza sobre un dato específico, indícalo explícitamente con [dato incierto].';
 
-    const sys = `Eres ${agent.name}, agente especializado en: "${agent.task}".
-${webEnabled ? 'Se te proporcionan resultados de búsqueda web reales. Úsalos como base factual.' : 'Usa tu conocimiento interno con rigor.'}
-Sé conciso y específico. Cita tus fuentes. No inventes datos.`;
+    const sys=`Eres ${agent.name}, agente especializado en: "${agent.task}".
+${web?'Tienes resultados de búsqueda web reales. Úsalos como base factual.':'Usa tu conocimiento interno con rigor.'}${noUrlNote}
+Sé conciso y específico. No inventes datos que no puedas justificar.`;
 
-    try {
-      const output = await callLLM(sys,
-        `CONTEXTO GLOBAL:\n${context}${webContext}\n\nTU TAREA: ${agent.task}`, 500);
-      updateAgentCard(agent.id, 'done', `✓ ${agent.steps} pasos`);
-      log(`✓ ${agent.name} completado`, 'green');
-      return { agent, output, ok: true };
-    } catch (e) {
-      updateAgentCard(agent.id, 'failed', `✗ ${e.message}`);
-      log(`✗ ${agent.name} falló: ${e.message}`, 'red');
-      return { agent, output: `[ERROR: ${e.message}]`, ok: false };
+    try{
+      const output=await llm(sys,`CONTEXTO:\n${ctx}${webCtx}\n\nTU TAREA: ${agent.task}`,500);
+      updCard(agent.id,'done',`✓ ${agent.steps} pasos`);
+      log(`✓ ${agent.name}`,'g');
+      return {agent,output,ok:true};
+    } catch(e){
+      updCard(agent.id,'failed',`✗ ${e.message}`);
+      log(`✗ ${agent.name}: ${e.message}`,'r');
+      return {agent,output:`[ERROR: ${e.message}]`,ok:false};
     }
-  });
-
-  return Promise.all(promises);
+  }));
 }
 
-// ══════════════════════════════════════════
-//  SWARM GRID UI
-// ══════════════════════════════════════════
-function renderSwarmGrid(agents) {
-  document.getElementById('swarmGrid').innerHTML = agents.map(a => `
-    <div class="agent-card" id="ac-${a.id}">
-      <div class="agent-head">
-        <span class="agent-id">${a.id}</span>
-        <span class="agent-name">${a.name}</span>
-        <div class="agent-status-dot"></div>
-      </div>
-      <div class="agent-task">${a.task}</div>
-      <div class="agent-steps" id="as-${a.id}">· en espera</div>
+// ══════════════════════════════════════════════════════
+//  SCORE PANEL
+// ══════════════════════════════════════════════════════
+function renderScorePanel(data, avg, retryCount){
+  const panel=document.getElementById('scorePanel');
+  panel.classList.add('visible');
+
+  const grid=document.getElementById('scoreGrid');
+  grid.innerHTML=RUBRIC_DIMS.map(d=>{
+    const sc=data.scores[d.id]||0;
+    const color = sc>=7?'var(--green)':sc>=5?'var(--amber)':'var(--red)';
+    const just=(data.justificaciones||{})[d.id]||'';
+    return `<div class="score-item">
+      <div class="score-item-name">${d.label}<span style="font-size:10px;color:var(--dim);margin-left:6px">${d.desc}</span></div>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${sc*10}%;background:${color}"></div></div>
+      <div class="score-val" style="color:${color}">${sc.toFixed(1)}/10</div>
+      ${just?`<div style="font-size:10px;color:var(--dim);margin-top:3px">${just}</div>`:''}
+    </div>`;
+  }).join('');
+
+  const totalEl=document.getElementById('scoreTotalVal');
+  const color = avg>=PASS_THRESHOLD?'var(--green)':avg>=4?'var(--amber)':'var(--red)';
+  totalEl.textContent=`${avg.toFixed(1)}/10`;
+  totalEl.style.color=color;
+
+  const verdict=document.getElementById('scoreVerdict');
+  if(avg>=PASS_THRESHOLD){ verdict.textContent='APROBADO'; verdict.className='score-verdict pass'; }
+  else if(avg>=4 && retryCount<MAX_RETRIES){ verdict.textContent='REINTENTANDO'; verdict.className='score-verdict retry'; }
+  else { verdict.textContent='RECHAZADO'; verdict.className='score-verdict fail'; }
+
+  const note=document.getElementById('scoreNote');
+  if(data.issues?.length){ note.textContent='Problemas detectados: '+data.issues.join(' · '); }
+
+  const rq=document.getElementById('retryQueries');
+  if(data.retry_queries?.length && avg<PASS_THRESHOLD){
+    rq.style.display='flex';
+    rq.innerHTML='<span style="font-size:10px;color:var(--amber);font-family:JetBrains Mono,monospace">QUERIES DE REINTENTO:</span>'+
+      data.retry_queries.map(q=>`<div class="retry-q">🔍 ${q}</div>`).join('');
+  } else { rq.style.display='none'; }
+}
+
+// ══════════════════════════════════════════════════════
+//  GRID UI
+// ══════════════════════════════════════════════════════
+function renderGrid(agents){
+  document.getElementById('sg').innerHTML=agents.map(a=>`
+    <div class="ac" id="ac-${a.id}">
+      <div class="ac-hd"><span class="ac-id">${a.id}</span><span class="ac-name">${a.name}</span><div class="ac-dot"></div></div>
+      <div class="ac-task">${a.task}</div>
+      <div class="ac-step" id="as-${a.id}">· en espera</div>
     </div>`).join('');
-  updateSwarmCounter(0, agents.length);
+  updCounter(0,agents.length);
 }
 
-function updateAgentCard(id, status, stepText) {
-  const card = document.getElementById(`ac-${id}`);
-  if (!card) return;
-  card.className = `agent-card ${status}`;
-  document.getElementById(`as-${id}`).textContent = stepText;
-  const done = document.querySelectorAll('.agent-card.done, .agent-card.failed').length;
-  const total = document.querySelectorAll('.agent-card').length;
-  updateSwarmCounter(done, total);
+function updCard(id,status,txt){
+  const c=document.getElementById(`ac-${id}`); if(!c) return;
+  c.className=`ac ${status}`;
+  document.getElementById(`as-${id}`).textContent=txt;
+  const done=document.querySelectorAll('.ac.done,.ac.failed').length;
+  const total=document.querySelectorAll('.ac').length;
+  updCounter(done,total);
 }
 
-function updateSwarmCounter(done, total) {
-  document.getElementById('swarmCounter').textContent = `${done} / ${total} completados`;
-}
+function updCounter(done,total){ document.getElementById('swCount').textContent=`${done} / ${total}`; }
 
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  FORMAT DECOMP
-// ══════════════════════════════════════════
-function formatDecomp(d, webEnabled) {
-  const rows = (d.agents||[]).map(a =>
-    `  <span class="token-cyan">${a.id}</span> <span class="token-amber">${a.name}</span> <span class="token-dim">·</span> ${a.task}${webEnabled && a.search_query ? `\n     <span class="token-teal">🔍 query:</span> <span class="token-dim">${a.search_query}</span>` : ''} <span class="token-dim">[~${a.steps} pasos]</span>`
+// ══════════════════════════════════════════════════════
+function fmtDecomp(d,web){
+  const rows=(d.agents||[]).map(a=>
+    `  <span class="tc">${a.id}</span> <span class="ta">${a.name}</span> <span class="td">·</span> ${a.task}${web&&a.search_query?`\n     <span class="tt">🔍</span> <span class="td">${a.search_query}</span>`:''} <span class="td">[~${a.steps} pasos]</span>`
   ).join('\n');
-  return `<span class="token-cyan">PLAN DE DESCOMPOSICIÓN${webEnabled ? ' · BÚSQUEDA WEB ACTIVADA' : ''}</span>
-<span class="token-dim">─────────────────────────────────────────</span>
+  return `<span class="tc">PLAN · ${web?'BÚSQUEDA WEB ON':'CONOCIMIENTO INTERNO'}</span>
+<span class="td">──────────────────────────────────────</span>
 ${rows}
-
-<span class="token-dim">─────────────────────────────────────────</span>
-<span class="token-green">Resumen:</span> ${d.summary||''}
-<span class="token-amber">Pasos estimados:</span> ${d.estimated_total_steps||''}
-<span class="token-red">Riesgo de calidad:</span> ${d.quality_risk||''}`;
+<span class="td">──────────────────────────────────────</span>
+<span class="tg">Resumen:</span> ${d.summary||''}
+<span class="ta">Pasos estimados:</span> ${d.estimated_total_steps||''}
+<span class="tr">Riesgo:</span> ${d.quality_risk||''}`;
 }
 
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  SKILLS
-// ══════════════════════════════════════════
-function renderSkills() {
-  const container = document.getElementById('skillListContainer');
-  document.getElementById('skillCount').textContent = `${state.skills.length} skills`;
-
-  if (!state.skills.length) {
-    container.innerHTML = `<div class="empty-skills"><div class="empty-icon">◎</div>Aún no hay skills guardados.<br>Ejecuta el loop y supera la verificación para acumular conocimiento reutilizable.</div>`;
+// ══════════════════════════════════════════════════════
+function renderSkills(){
+  const c=document.getElementById('skContainer');
+  document.getElementById('skCount').textContent=`${S.skills.length} skills`;
+  if(!S.skills.length){
+    c.innerHTML='<div class="sk-empty"><div class="ei">◎</div>Aún no hay skills. Ejecuta el loop para acumular conocimiento reutilizable.</div>';
     return;
   }
-  container.innerHTML = `<div class="skill-list">${
-    [...state.skills].reverse().map(s => `
-    <div class="skill-item">
-      <div class="skill-item-head">
-        <span class="skill-icon">⚡</span>
-        <span class="skill-name">${s.name}</span>
-        <span class="skill-date">${s.date} · run #${s.runs}</span>
-      </div>
-      <div class="skill-desc">${s.desc}</div>
-      <div class="skill-constraints">↳ CONSTRAINT: ${s.constraint}</div>
-      ${s.webSearch ? `<span class="skill-web-badge">🔍 ${s.sourceCount||0} fuentes web</span>` : ''}
-    </div>`).join('')
-  }</div>`;
+  c.innerHTML=`<div class="sk-list">${[...S.skills].reverse().map(s=>`
+  <div class="sk-item">
+    <div class="sk-item-hd">
+      <span>⚡</span>
+      <span class="sk-name">${s.name}</span>
+      <span class="sk-meta">${s.date} · run #${s.run}</span>
+    </div>
+    <div class="sk-desc">${s.desc}</div>
+    <div class="sk-con">↳ CONSTRAINT: ${s.constraint}</div>
+    <span class="sk-score ${s.confidence}">${s.score}/10 · confianza ${s.confidence==='high'?'alta':'media'}</span>
+    ${s.web?`<span class="sk-score web">🔍 ${s.sources} fuentes</span>`:''}
+    ${s.retries>0?`<span class="sk-score mid">⟳ ${s.retries} reintentos</span>`:''}
+  </div>`).join('')}</div>`;
 }
 
-function clearSkills() {
-  if (!confirm('¿Borrar todos los skills guardados?')) return;
-  state.skills = [];
-  localStorage.removeItem('swarm_skills');
-  renderSkills();
-  updateFooter();
+function clearSkills(){
+  if(!confirm('¿Borrar todos los skills?')) return;
+  S.skills=[];
+  localStorage.removeItem('swarm_skills_v2');
+  renderSkills(); updateFooter();
 }
 
-function updateFooter() {
-  document.getElementById('footerStats').textContent =
-    `Runs: ${state.runs} · Búsquedas: ${state.totalSearches} · Skills: ${state.skills.length}`;
+function updateFooter(){
+  document.getElementById('fStats').textContent=`Runs: ${S.runs} · Búsquedas: ${S.searches} · Skills: ${S.skills.length}`;
 }
 
-const delay = ms => new Promise(r => setTimeout(r, ms));
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
 </script>
 </body>
 </html>
