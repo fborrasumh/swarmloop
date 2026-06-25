@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwarmLoop — El bucle que aprende</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:       #0a0b0f;
+    --surface:  #12141a;
+    --border:   #1e2130;
+    --muted:    #2a2d3e;
+    --text:     #c8ccdd;
+    --dim:      #5a5f78;
+    --white:    #eef0f8;
+    --cyan:     #00d4ff;
+    --green:    #00ff9d;
+    --amber:    #ffb347;
+    --red:      #ff5e7d;
+    --purple:   #a78bfa;
+    --glow-c:   0 0 20px rgba(0,212,255,0.25);
+    --glow-g:   0 0 20px rgba(0,255,157,0.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 28px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 18px; color: #000;
+    flex-shrink: 0;
+  }
+  .logo-text { font-family: 'JetBrains Mono', monospace; }
+  .logo-text strong { color: var(--white); font-size: 16px; letter-spacing: -0.3px; }
+  .logo-text span { display: block; font-size: 11px; color: var(--dim); }
+  .header-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--cyan);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 3px 10px; border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    padding: 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── API KEY PANEL ── */
+  .api-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .api-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--dim); white-space: nowrap;
+  }
+  .api-panel input {
+    flex: 1; min-width: 200px;
+    background: var(--muted); border: 1px solid var(--border);
+    color: var(--white); border-radius: 6px; padding: 7px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    outline: none; letter-spacing: 1px;
+  }
+  .api-panel input:focus { border-color: var(--cyan); }
+  .save-btn {
+    background: transparent; border: 1px solid var(--cyan);
+    color: var(--cyan); border-radius: 6px; padding: 7px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    cursor: pointer; transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .save-btn:hover { background: rgba(0,212,255,0.1); }
+  .api-status { font-size: 11px; color: var(--green); }
+
+  /* ── SPEC EDITOR ── */
+  .spec-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header .step-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--cyan);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;
+  }
+  .card-header h2 { font-size: 13px; color: var(--white); font-weight: 500; }
+  .card-header .hint { font-size: 11px; color: var(--dim); margin-left: auto; }
+  textarea {
+    width: 100%;
+    background: var(--bg);
+    border: none; outline: none; resize: vertical;
+    color: var(--text); font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; line-height: 1.7; padding: 16px 20px;
+    min-height: 160px;
+  }
+  textarea::placeholder { color: var(--dim); }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .run-btn {
+    background: linear-gradient(135deg, #00d4ff, #a78bfa);
+    border: none; border-radius: 8px;
+    color: #000; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; padding: 10px 24px;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.5px;
+  }
+  .run-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .agents-select {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 9px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    outline: none; cursor: pointer;
+  }
+  .agents-select:focus { border-color: var(--cyan); }
+  .stat-pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--dim); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 20px;
+  }
+  .stat-pill span { color: var(--cyan); }
+
+  /* ── PIPELINE VISUAL ── */
+  .pipeline {
+    display: flex; align-items: center; gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 20px; overflow-x: auto;
+  }
+  .p-node {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 6px;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    white-space: nowrap; transition: all 0.3s;
+    color: var(--dim);
+  }
+  .p-node.active { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-c); }
+  .p-node.done   { border-color: var(--green); color: var(--green); box-shadow: var(--glow-g); }
+  .p-node.verify.active { border-color: var(--purple); color: var(--purple); box-shadow: 0 0 20px rgba(167,139,250,0.3); }
+  .p-node.verify.done   { border-color: var(--green); color: var(--green); }
+  .p-node.skill.done    { border-color: var(--amber); color: var(--amber); box-shadow: 0 0 20px rgba(255,179,71,0.25); }
+  .p-arrow { color: var(--border); font-size: 16px; padding: 0 4px; flex-shrink: 0; }
+  .p-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+  .p-dot.pulse { animation: pulse-anim 0.8s infinite; }
+  @keyframes pulse-anim {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.3; transform: scale(0.6); }
+  }
+
+  /* ── SWARM GRID ── */
+  .swarm-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .swarm-header {
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .swarm-header h3 { font-size: 12px; color: var(--white); font-weight: 500; }
+  .swarm-counter {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--cyan);
+  }
+  .swarm-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1px; background: var(--border);
+    max-height: 340px; overflow-y: auto;
+  }
+  .agent-card {
+    background: var(--bg); padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 5px;
+    transition: background 0.2s;
+  }
+  .agent-card.running { background: rgba(0,212,255,0.04); }
+  .agent-card.done    { background: rgba(0,255,157,0.03); }
+  .agent-card.failed  { background: rgba(255,94,125,0.04); }
+  .agent-head { display: flex; align-items: center; gap: 8px; }
+  .agent-id {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--dim); width: 36px; flex-shrink: 0;
+  }
+  .agent-name { font-size: 11px; color: var(--white); font-weight: 500; flex: 1; }
+  .agent-status-dot {
+    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    background: var(--border);
+  }
+  .agent-card.running .agent-status-dot { background: var(--cyan); animation: pulse-anim 0.9s infinite; }
+  .agent-card.done    .agent-status-dot { background: var(--green); }
+  .agent-card.failed  .agent-status-dot { background: var(--red); }
+  .agent-task { font-size: 10px; color: var(--dim); line-height: 1.4; padding-left: 44px; }
+  .agent-steps {
+    padding-left: 44px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--cyan);
+  }
+
+  /* ── OUTPUT PANEL ── */
+  .output-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .output-tabs {
+    display: flex; border-bottom: 1px solid var(--border); padding: 0 20px;
+  }
+  .tab-btn {
+    background: none; border: none; color: var(--dim);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 12px 16px; cursor: pointer; border-bottom: 2px solid transparent;
+    transition: color 0.2s; letter-spacing: 0.5px;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+  .tab-content { display: none; padding: 16px 20px; }
+  .tab-content.active { display: block; }
+  .output-box {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 16px; min-height: 120px; max-height: 300px;
+    overflow-y: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; line-height: 1.8; color: var(--text);
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .output-box .token-cyan   { color: var(--cyan); }
+  .output-box .token-green  { color: var(--green); }
+  .output-box .token-amber  { color: var(--amber); }
+  .output-box .token-purple { color: var(--purple); }
+  .output-box .token-red    { color: var(--red); }
+  .output-box .token-dim    { color: var(--dim); }
+
+  /* ── SKILL BANK ── */
+  .skill-bank {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .skill-bank-header {
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .skill-bank-header h3 { font-size: 12px; color: var(--white); font-weight: 500; }
+  .skill-count {
+    background: rgba(255,179,71,0.15); border: 1px solid rgba(255,179,71,0.3);
+    color: var(--amber); font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  }
+  .clear-skills {
+    margin-left: auto; background: none; border: 1px solid var(--border);
+    color: var(--dim); border-radius: 5px; padding: 4px 10px;
+    font-size: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .clear-skills:hover { border-color: var(--red); color: var(--red); }
+  .skill-list { padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .skill-item {
+    background: rgba(255,179,71,0.05); border: 1px solid rgba(255,179,71,0.15);
+    border-radius: 7px; padding: 10px 14px;
+  }
+  .skill-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .skill-icon { font-size: 13px; }
+  .skill-name { font-size: 12px; color: var(--amber); font-weight: 500; }
+  .skill-date { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); margin-left: auto; }
+  .skill-desc { font-size: 11px; color: var(--text); line-height: 1.5; }
+  .skill-constraints {
+    margin-top: 6px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--green); opacity: 0.8;
+  }
+  .empty-skills {
+    padding: 30px 20px; text-align: center;
+    font-size: 12px; color: var(--dim);
+  }
+  .empty-skills .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+  /* ── VERIFY BADGE ── */
+  .verify-result {
+    margin-top: 12px; padding: 12px 16px;
+    border-radius: 7px; font-size: 12px; line-height: 1.6;
+    display: none;
+  }
+  .verify-result.pass { background: rgba(0,255,157,0.07); border: 1px solid rgba(0,255,157,0.25); color: var(--green); }
+  .verify-result.fail { background: rgba(255,94,125,0.07); border: 1px solid rgba(255,94,125,0.25); color: var(--red); }
+  .verify-result.visible { display: block; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim);
+    flex-wrap: wrap; gap: 8px;
+  }
+  footer a { color: var(--cyan); text-decoration: none; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .pipeline { gap: 0; padding: 12px; }
+    .p-node { padding: 5px 8px; font-size: 10px; }
+    .swarm-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-mark">⟳</div>
+    <div class="logo-text">
+      <strong>SwarmLoop</strong>
+      <span>Self-improving agent pipeline · gpt-4o-mini</span>
+    </div>
+    <div class="header-badge">BETA</div>
+  </header>
+
+  <main>
+
+    <!-- API KEY -->
+    <div class="api-panel">
+      <span class="api-label">OPENAI_KEY</span>
+      <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+      <button class="save-btn" onclick="saveKey()">Guardar</button>
+      <span class="api-status" id="apiStatus"></span>
+    </div>
+
+    <!-- SPEC EDITOR -->
+    <div class="spec-card">
+      <div class="card-header">
+        <span class="step-tag">SPEC</span>
+        <h2>Define el objetivo del swarm</h2>
+        <span class="hint">Sé específico en el output esperado</span>
+      </div>
+      <textarea id="specInput" placeholder="GOAL: Analizar el mercado de apps de fitness en España 2024
+SCOPE: Apps con >10k descargas, excluir apps de nutrición
+SOURCES: App Store, Google Play, informes públicos únicamente
+OUTPUT: Lista de 20 apps con descripción, precio y ventaja competitiva
+STOP CONDITION: Si no hay datos verificables, reportar en lugar de inventar"></textarea>
+      <div style="padding:12px 20px; border-top:1px solid var(--border);">
+        <div class="controls">
+          <button class="run-btn" id="runBtn" onclick="startLoop()">▶ Ejecutar Swarm</button>
+          <select class="agents-select" id="agentCount">
+            <option value="4">4 agentes (demo)</option>
+            <option value="6" selected>6 agentes</option>
+            <option value="8">8 agentes</option>
+          </select>
+          <div class="stat-pill" id="runCounter">Ejecuciones: <span>0</span></div>
+          <div class="stat-pill" id="stepCounter">Pasos: <span>0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE VISUAL -->
+    <div class="pipeline" id="pipeline">
+      <div class="p-node" id="pn-spec">
+        <div class="p-dot"></div>SPEC
+      </div>
+      <div class="p-arrow">──▶</div>
+      <div class="p-node" id="pn-decomp">
+        <div class="p-dot"></div>DECOMP
+      </div>
+      <div class="p-arrow">──▶</div>
+      <div class="p-node" id="pn-swarm">
+        <div class="p-dot"></div>SWARM
+      </div>
+      <div class="p-arrow">──▶</div>
+      <div class="p-node verify" id="pn-verify">
+        <div class="p-dot"></div>VERIFY
+      </div>
+      <div class="p-arrow">──▶</div>
+      <div class="p-node skill" id="pn-skill">
+        <div class="p-dot"></div>SKILL ⊕
+      </div>
+    </div>
+
+    <!-- SWARM GRID -->
+    <div class="swarm-section" id="swarmSection" style="display:none">
+      <div class="swarm-header">
+        <h3>Agentes activos</h3>
+        <div class="swarm-counter" id="swarmCounter">0 / 0 completados</div>
+      </div>
+      <div class="swarm-grid" id="swarmGrid"></div>
+    </div>
+
+    <!-- OUTPUT TABS -->
+    <div class="output-section">
+      <div class="output-tabs">
+        <button class="tab-btn active" onclick="switchTab('decomp')">Descomposición</button>
+        <button class="tab-btn" onclick="switchTab('results')">Resultados</button>
+        <button class="tab-btn" onclick="switchTab('verify')">Verificación</button>
+        <button class="tab-btn" onclick="switchTab('log')">Log</button>
+      </div>
+      <div class="tab-content active" id="tab-decomp">
+        <div class="output-box" id="out-decomp"><span style="color:var(--dim)">Aquí aparecerá el plan de descomposición del swarm antes de ejecutarse...</span></div>
+      </div>
+      <div class="tab-content" id="tab-results">
+        <div class="output-box" id="out-results"><span style="color:var(--dim)">Los resultados consolidados aparecerán aquí...</span></div>
+      </div>
+      <div class="tab-content" id="tab-verify">
+        <div class="output-box" id="out-verify"><span style="color:var(--dim)">El agente Verificador (crítico) analizará los resultados aquí...</span></div>
+        <div class="verify-result" id="verifyBadge"></div>
+      </div>
+      <div class="tab-content" id="tab-log">
+        <div class="output-box" id="out-log"><span style="color:var(--dim)">Log de ejecución en tiempo real...</span></div>
+      </div>
+    </div>
+
+    <!-- SKILL BANK -->
+    <div class="skill-bank">
+      <div class="skill-bank-header">
+        <h3>🧠 Skill Bank</h3>
+        <div class="skill-count" id="skillCount">0 skills</div>
+        <button class="clear-skills" onclick="clearSkills()">Borrar todo</button>
+      </div>
+      <div id="skillListContainer">
+        <div class="empty-skills">
+          <div class="empty-icon">◎</div>
+          Aún no hay skills guardados.<br>Ejecuta el loop y supera la verificación para acumular conocimiento.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>SwarmLoop · inspirado en <a href="https://x.com/0xmovez" target="_blank">@0xMovez</a> · gpt-4o-mini</span>
+    <span id="totalRuns">Total runs: 0 · Skills acumulados: 0</span>
+  </footer>
+
+</div>
+
+<script>
+// ── STATE ──
+let state = {
+  runs: 0,
+  totalSteps: 0,
+  skills: JSON.parse(localStorage.getItem('swarm_skills') || '[]'),
+  running: false
+};
+
+// ── INIT ──
+const savedKey = localStorage.getItem('openai_key');
+if (savedKey) {
+  document.getElementById('apiKey').value = savedKey;
+  document.getElementById('apiStatus').textContent = '✓ cargada';
+}
+renderSkills();
+updateFooter();
+
+// ── API KEY ──
+function saveKey() {
+  const k = document.getElementById('apiKey').value.trim();
+  if (!k.startsWith('sk-')) { alert('La clave debe empezar con sk-'); return; }
+  localStorage.setItem('openai_key', k);
+  document.getElementById('apiStatus').textContent = '✓ guardada';
+  setTimeout(() => document.getElementById('apiStatus').textContent = '', 2000);
+}
+
+function getKey() { return localStorage.getItem('openai_key') || ''; }
+
+// ── TABS ──
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', b.onclick.toString().includes(`'${id}'`));
+  });
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.classList.toggle('active', c.id === `tab-${id}`);
+  });
+}
+
+// ── LOG ──
+function log(msg, type='dim') {
+  const el = document.getElementById('out-log');
+  const time = new Date().toLocaleTimeString('es', {hour12:false});
+  el.innerHTML += `<span class="token-${type}">[${time}] ${msg}</span>\n`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── PIPELINE STATE ──
+function setNode(id, st) {
+  const el = document.getElementById(`pn-${id}`);
+  el.classList.remove('active','done');
+  if (st) el.classList.add(st);
+  const dot = el.querySelector('.p-dot');
+  dot.classList.toggle('pulse', st === 'active');
+}
+
+function resetPipeline() {
+  ['spec','decomp','swarm','verify','skill'].forEach(n => setNode(n, null));
+}
+
+// ── OPENAI CALL ──
+async function callLLM(systemPrompt, userPrompt, maxTokens=700) {
+  const key = getKey();
+  if (!key) throw new Error('API key no configurada');
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      max_tokens: maxTokens,
+      temperature: 0.7,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Error API');
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+// ── MAIN LOOP ──
+async function startLoop() {
+  if (state.running) return;
+  const key = getKey();
+  if (!key) { alert('Primero guarda tu API key de OpenAI'); return; }
+  const spec = document.getElementById('specInput').value.trim();
+  if (!spec) { alert('Escribe una especificación antes de ejecutar'); return; }
+
+  state.running = true;
+  state.runs++;
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('runBtn').textContent = '⟳ Ejecutando...';
+  document.getElementById('runCounter').innerHTML = `Ejecuciones: <span>${state.runs}</span>`;
+
+  // Reset UI
+  resetPipeline();
+  ['decomp','results','verify','log'].forEach(t => {
+    document.getElementById(`out-${t}`).innerHTML = '';
+  });
+  document.getElementById('verifyBadge').className = 'verify-result';
+  document.getElementById('verifyBadge').textContent = '';
+
+  const agentCount = parseInt(document.getElementById('agentCount').value);
+
+  try {
+    // ── PHASE 1: SPEC ──
+    setNode('spec', 'active');
+    log('Leyendo especificación...', 'cyan');
+    await delay(400);
+    setNode('spec', 'done');
+
+    // ── PHASE 2: DECOMP ──
+    setNode('decomp', 'active');
+    log('Generando plan de descomposición...', 'cyan');
+    switchTab('decomp');
+
+    // Inject previous skills into context
+    const skillContext = state.skills.length > 0
+      ? `\n\nSKILLS PREVIOS DISPONIBLES:\n${state.skills.map(s=>`- ${s.name}: ${s.constraint}`).join('\n')}`
+      : '';
+
+    const decompPrompt = `Eres el orquestador de un swarm de ${agentCount} agentes especializados. 
+Analiza la especificación y genera el plan de descomposición en JSON.
+
+Devuelve EXACTAMENTE este JSON (sin markdown):
+{
+  "agents": [
+    {"id": "A01", "name": "NombreCorto", "task": "tarea específica en una frase", "steps": número_entre_8_y_25},
+    ... (exactamente ${agentCount} agentes)
+  ],
+  "summary": "descripción del plan en 2-3 frases",
+  "estimated_total_steps": número_total,
+  "quality_risk": "dónde puede fallar la calidad"
+}`;
+
+    const decompRaw = await callLLM(decompPrompt, spec + skillContext, 800);
+    let decomp;
+    try {
+      decomp = JSON.parse(decompRaw.replace(/```json|```/g,'').trim());
+    } catch {
+      decomp = {
+        agents: Array.from({length: agentCount}, (_, i) => ({
+          id: `A0${i+1}`, name: `Agente ${i+1}`,
+          task: `Subtarea ${i+1} del objetivo principal`, steps: 12
+        })),
+        summary: 'Plan generado automáticamente.',
+        estimated_total_steps: agentCount * 12,
+        quality_risk: 'Validación de fuentes'
+      };
+    }
+
+    const decompEl = document.getElementById('out-decomp');
+    decompEl.innerHTML = formatDecomp(decomp);
+    log(`Plan: ${decomp.agents.length} agentes · ~${decomp.estimated_total_steps} pasos`, 'green');
+    setNode('decomp', 'done');
+
+    // ── PHASE 3: SWARM ──
+    setNode('swarm', 'active');
+    log('Lanzando swarm en paralelo...', 'amber');
+    document.getElementById('swarmSection').style.display = 'block';
+    renderSwarmGrid(decomp.agents, 'pending');
+
+    // Run all agents in parallel
+    const agentResults = await runSwarm(decomp.agents, spec + skillContext);
+
+    setNode('swarm', 'done');
+    log(`Swarm completado. ${agentResults.filter(r=>r.ok).length}/${agentResults.length} agentes OK`, 'green');
+
+    // Consolidate results
+    const consolidated = agentResults.map(r => `[${r.agent.name}]\n${r.output}`).join('\n\n---\n\n');
+    document.getElementById('out-results').textContent = consolidated;
+
+    // ── PHASE 4: VERIFY ──
+    setNode('verify', 'active');
+    log('Verificador analizando resultados...', 'purple');
+    switchTab('verify');
+
+    const verifyPrompt = `Eres el agente Verificador. Tu ÚNICO trabajo es encontrar fallos, contradicciones e incertidumbre.
+NO alabes los resultados. Busca activamente problemas.
+
+Evalúa con criterio estricto:
+1. ¿Hay afirmaciones sin fuente verificable?
+2. ¿Hay contradicciones entre agentes?  
+3. ¿El output cumple la especificación original?
+4. ¿Hay alucinaciones o datos inventados?
+
+Al final, emite un veredicto: APROBADO o RECHAZADO con justificación.
+Si APROBADO, extrae el skill aprendido en formato:
+SKILL_NAME: nombre corto
+SKILL_DESC: qué hace este tipo de tarea
+SKILL_CONSTRAINT: qué evitar en próximas ejecuciones`;
+
+    const verifyOut = await callLLM(verifyPrompt, `SPEC:\n${spec}\n\nRESULTADOS:\n${consolidated}`, 900);
+    document.getElementById('out-verify').textContent = verifyOut;
+
+    const passed = verifyOut.toUpperCase().includes('APROBADO');
+    const badge = document.getElementById('verifyBadge');
+    badge.className = `verify-result ${passed ? 'pass' : 'fail'} visible`;
+    badge.textContent = passed
+      ? '✓ VERIFICACIÓN SUPERADA — Los resultados son suficientemente confiables para guardar el skill'
+      : '✗ VERIFICACIÓN FALLIDA — Los resultados no superaron el control de calidad. El skill NO se guarda.';
+
+    setNode('verify', 'done');
+
+    // ── PHASE 5: SKILL ──
+    if (passed) {
+      setNode('skill', 'active');
+      log('Extrayendo y guardando skill...', 'amber');
+
+      // Extract skill from verify output
+      const nameMatch   = verifyOut.match(/SKILL_NAME:\s*(.+)/i);
+      const descMatch   = verifyOut.match(/SKILL_DESC:\s*(.+)/i);
+      const constMatch  = verifyOut.match(/SKILL_CONSTRAINT:\s*(.+)/i);
+
+      const skill = {
+        id: Date.now(),
+        name: nameMatch?.[1]?.trim() || `Skill #${state.skills.length + 1}`,
+        desc: descMatch?.[1]?.trim() || 'Proceso de investigación y análisis estructurado',
+        constraint: constMatch?.[1]?.trim() || 'Verificar siempre las fuentes primarias',
+        date: new Date().toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'}),
+        runs: state.runs,
+        steps: decomp.estimated_total_steps
+      };
+
+      state.skills.push(skill);
+      localStorage.setItem('swarm_skills', JSON.stringify(state.skills));
+      renderSkills();
+      setNode('skill', 'done');
+      log(`✓ Skill "${skill.name}" guardado en el banco`, 'amber');
+    } else {
+      log('✗ Skill descartado — no superó la verificación', 'red');
+    }
+
+    // Update stats
+    state.totalSteps += decomp.estimated_total_steps || 0;
+    document.getElementById('stepCounter').innerHTML = `Pasos: <span>${state.totalSteps}</span>`;
+    updateFooter();
+    log(`Ejecución #${state.runs} completada.`, 'green');
+
+  } catch (err) {
+    log(`ERROR: ${err.message}`, 'red');
+    resetPipeline();
+  } finally {
+    state.running = false;
+    document.getElementById('runBtn').disabled = false;
+    document.getElementById('runBtn').textContent = '▶ Ejecutar Swarm';
+  }
+}
+
+// ── RUN AGENTS IN PARALLEL ──
+async function runSwarm(agents, context) {
+  renderSwarmGrid(agents, 'pending');
+  const statuses = Object.fromEntries(agents.map(a => [a.id, 'pending']));
+
+  const promises = agents.map(async (agent, i) => {
+    await delay(i * 120); // stagger launches
+    statuses[agent.id] = 'running';
+    updateAgentCard(agent.id, 'running');
+
+    const prompt = `Eres ${agent.name}, un agente especializado en: "${agent.task}".
+Ejecuta tu tarea con rigor. Sé conciso pero completo.
+Indica tus fuentes de razonamiento. No inventes datos.
+Limita tu respuesta a lo esencial para tu subtarea.`;
+
+    try {
+      const output = await callLLM(prompt, `CONTEXTO GLOBAL:\n${context}\n\nTU TAREA: ${agent.task}`, 400);
+      statuses[agent.id] = 'done';
+      updateAgentCard(agent.id, 'done', agent.steps);
+      log(`✓ ${agent.name} completado (${agent.steps} pasos)`, 'green');
+      return { agent, output, ok: true };
+    } catch (e) {
+      statuses[agent.id] = 'failed';
+      updateAgentCard(agent.id, 'failed');
+      log(`✗ ${agent.name} falló: ${e.message}`, 'red');
+      return { agent, output: `[ERROR: ${e.message}]`, ok: false };
+    }
+  });
+
+  return Promise.all(promises);
+}
+
+// ── SWARM GRID UI ──
+function renderSwarmGrid(agents, status) {
+  const grid = document.getElementById('swarmGrid');
+  grid.innerHTML = agents.map(a => `
+    <div class="agent-card" id="ac-${a.id}">
+      <div class="agent-head">
+        <span class="agent-id">${a.id}</span>
+        <span class="agent-name">${a.name}</span>
+        <div class="agent-status-dot"></div>
+      </div>
+      <div class="agent-task">${a.task}</div>
+      <div class="agent-steps" id="as-${a.id}">· en espera</div>
+    </div>`).join('');
+  updateSwarmCounter(0, agents.length);
+}
+
+let doneCount = 0;
+function updateAgentCard(id, status, steps) {
+  const card = document.getElementById(`ac-${id}`);
+  if (!card) return;
+  card.className = `agent-card ${status}`;
+  const stepEl = document.getElementById(`as-${id}`);
+  if (status === 'running') stepEl.textContent = '⟳ ejecutando...';
+  if (status === 'done') { doneCount++; stepEl.textContent = `✓ ${steps} pasos`; }
+  if (status === 'failed') stepEl.textContent = '✗ error';
+  const total = document.querySelectorAll('.agent-card').length;
+  const done = document.querySelectorAll('.agent-card.done').length + document.querySelectorAll('.agent-card.failed').length;
+  updateSwarmCounter(done, total);
+}
+
+function updateSwarmCounter(done, total) {
+  document.getElementById('swarmCounter').textContent = `${done} / ${total} completados`;
+}
+
+// ── FORMAT DECOMP ──
+function formatDecomp(d) {
+  const agents = (d.agents||[]).map(a =>
+    `  <span class="token-cyan">${a.id}</span> <span class="token-amber">${a.name}</span> <span class="token-dim">·</span> ${a.task} <span class="token-dim">[~${a.steps} pasos]</span>`
+  ).join('\n');
+  return `<span class="token-cyan">PLAN DE DESCOMPOSICIÓN</span>
+<span class="token-dim">───────────────────────────────────</span>
+${agents}
+
+<span class="token-dim">───────────────────────────────────</span>
+<span class="token-green">Resumen:</span> ${d.summary || ''}
+<span class="token-amber">Pasos estimados:</span> ${d.estimated_total_steps || ''}
+<span class="token-red">Riesgo de calidad:</span> ${d.quality_risk || ''}`;
+}
+
+// ── SKILLS UI ──
+function renderSkills() {
+  const container = document.getElementById('skillListContainer');
+  const count = document.getElementById('skillCount');
+  count.textContent = `${state.skills.length} skills`;
+
+  if (state.skills.length === 0) {
+    container.innerHTML = `<div class="empty-skills"><div class="empty-icon">◎</div>Aún no hay skills guardados.<br>Ejecuta el loop y supera la verificación para acumular conocimiento.</div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="skill-list">${
+    [...state.skills].reverse().map(s => `
+    <div class="skill-item">
+      <div class="skill-item-head">
+        <span class="skill-icon">⚡</span>
+        <span class="skill-name">${s.name}</span>
+        <span class="skill-date">${s.date} · run #${s.runs}</span>
+      </div>
+      <div class="skill-desc">${s.desc}</div>
+      <div class="skill-constraints">↳ CONSTRAINT: ${s.constraint}</div>
+    </div>`).join('')
+  }</div>`;
+}
+
+function clearSkills() {
+  if (!confirm('¿Borrar todos los skills guardados?')) return;
+  state.skills = [];
+  localStorage.removeItem('swarm_skills');
+  renderSkills();
+  updateFooter();
+}
+
+function updateFooter() {
+  document.getElementById('totalRuns').textContent =
+    `Total runs: ${state.runs} · Skills acumulados: ${state.skills.length}`;
+}
+
+// ── UTILS ──
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
